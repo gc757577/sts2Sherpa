@@ -1,0 +1,60 @@
+package com.gchan.sts2_sherpa
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gchan.sts2_sherpa.ui.MainScreen
+import com.gchan.sts2_sherpa.ui.MainViewModel
+import com.gchan.sts2_sherpa.ui.theme.Sts2_SherpaTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            Sts2_SherpaTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    CardsApp(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CardsApp(
+    modifier: Modifier = Modifier,
+) {
+    val viewModel: MainViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
+    MainScreen(
+        uiState = uiState,
+        onRewardSlotClick = viewModel::openCardPicker,
+        onRewardCardClick = viewModel::addRewardCardToDeck,
+        onCardPicked = viewModel::selectCardForSlot,
+        onDismissCardPicker = viewModel::closeCardPicker,
+        onDeckClick = viewModel::openDeckDialog,
+        onDismissDeck = viewModel::closeDeckDialog,
+        onSkipClick = viewModel::clearRewardSlots,
+        onImageSelected = viewModel::recognizeCardsFromImage,
+        onOcrMessageShown = viewModel::consumeOcrMessage,
+        onOcrResultSlotClick = viewModel::openOcrResultCardPicker,
+        onOcrResultCardPicked = viewModel::selectPendingRecognizedCard,
+        onDismissOcrResultCardPicker = viewModel::closeOcrResultCardPicker,
+        onConfirmOcrResult = viewModel::confirmRecognizedCards,
+        onCancelOcrResult = viewModel::cancelRecognizedCards,
+        modifier = modifier,
+    )
+}

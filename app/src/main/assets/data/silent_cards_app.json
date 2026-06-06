@@ -1,0 +1,4278 @@
+[
+  {
+    "id": "STORM_OF_STEEL",
+    "nameKo": "강철의 폭풍",
+    "normalizedName": "강철의폭풍",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "손에 있는 모든 카드를 버립니다. 버린 카드의 수만큼 단도를 손으로 가져옵니다.",
+    "image": "cards/silent/storm_of_steel.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "shiv",
+      "discard"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "shiv",
+      "sly"
+    ],
+    "allTags": [
+      "skill",
+      "shiv",
+      "discard",
+      "extra_action",
+      "sly"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도",
+      "교활"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "단도",
+      "교활"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BLADE_DANCE",
+    "nameKo": "검무",
+    "normalizedName": "검무",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "단도를 3장 손으로 가져옵니다.",
+    "image": "cards/silent/blade_dance.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 3,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "shiv",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "shiv"
+    ],
+    "allTags": [
+      "skill",
+      "shiv",
+      "exhaust"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "단도"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "CALCULATED_GAMBLE",
+    "nameKo": "계산된 도박",
+    "normalizedName": "계산된도박",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "손에 있는 모든 카드를 버린 뒤, 버린 카드의 수만큼 카드를 뽑습니다.",
+    "image": "cards/silent/calculated_gamble.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "sly",
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "exhaust",
+      "sly",
+      "draw"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ACROBATICS",
+    "nameKo": "곡예",
+    "normalizedName": "곡예",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "카드를 3장 뽑습니다. 카드를 1장 버립니다.",
+    "image": "cards/silent/acrobatics.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 3,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "draw",
+      "discard"
+    ],
+    "recommendTags": [
+      "sly",
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "draw",
+      "discard",
+      "sly"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BACKFLIP",
+    "nameKo": "공중제비",
+    "normalizedName": "공중제비",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "방어도를 5 얻습니다. 카드를 2장 뽑습니다.",
+    "image": "cards/silent/backflip.webp",
+    "damage": null,
+    "block": 5,
+    "hitCount": null,
+    "cardsDraw": 2,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block",
+      "draw"
+    ],
+    "recommendTags": [
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "draw"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "WELL_LAID_PLANS",
+    "nameKo": "괜찮은 전략",
+    "normalizedName": "괜찮은전략",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "내 턴 종료 시, 카드를 최대 1장까지 보존합니다.",
+    "image": "cards/silent/well_laid_plans.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power",
+      "retain"
+    ],
+    "recommendTags": [
+      "retain"
+    ],
+    "allTags": [
+      "power",
+      "retain"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활",
+      "보존"
+    ],
+    "tagsKo": [
+      "보존"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SERPENT_FORM",
+    "nameKo": "구렁이의 형상",
+    "normalizedName": "구렁이의형상",
+    "cost": 3,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "카드를 사용할 때마다, 무작위 적에게 피해를 4 줍니다.",
+    "image": "cards/silent/serpent_form.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "scaling"
+    ],
+    "allTags": [
+      "power",
+      "extra_action",
+      "scaling"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "-",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "스케일링"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DODGE_AND_ROLL",
+    "nameKo": "구르기",
+    "normalizedName": "구르기",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "방어도를 4 얻습니다. 다음 턴에, 방어도를 4 얻습니다.",
+    "image": "cards/silent/dodge_and_roll.webp",
+    "damage": null,
+    "block": 4,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "extra_action"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "PIERCING_WAIL",
+    "nameKo": "귀를 찢는 비명",
+    "normalizedName": "귀를찢는비명",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "이번 턴 동안 모든 적이 힘을 6 잃습니다.",
+    "image": "cards/silent/piercing_wail.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AllEnemies",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "aoe",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "debuff"
+    ],
+    "allTags": [
+      "skill",
+      "aoe",
+      "exhaust",
+      "debuff"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "디버프"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SHADOW_STEP",
+    "nameKo": "그림자 걸음",
+    "normalizedName": "그림자걸음",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "손에 있는 모든 카드를 버립니다. 다음 턴에, 공격 카드의 피해량이 2배가 됩니다.",
+    "image": "cards/silent/shadow_step.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 3,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "discard"
+    ],
+    "recommendTags": [
+      "sly",
+      "scaling",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "discard",
+      "sly",
+      "scaling",
+      "value"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "HIGH",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "-",
+      "act2": "-",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "스케일링",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SHADOWMELD",
+    "nameKo": "그림자 은신",
+    "normalizedName": "그림자은신",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "이번 턴 동안 얻는 방어도가 2배가 됩니다.",
+    "image": "cards/silent/shadowmeld.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "extra_action",
+      "value"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SKEWER",
+    "nameKo": "꼬챙이",
+    "normalizedName": "꼬챙이",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 8만큼 X번 줍니다.",
+    "image": "cards/silent/skewer.webp",
+    "damage": 8,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value",
+      "multi_hit"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value",
+      "multi_hit"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류",
+      "연타기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "LEG_SWEEP",
+    "nameKo": "다리 걸기",
+    "normalizedName": "다리걸기",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "약화를 2 부여합니다. 방어도를 11 얻습니다.",
+    "image": "cards/silent/leg_sweep.webp",
+    "damage": null,
+    "block": 11,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block",
+      "weak"
+    ],
+    "recommendTags": [
+      "weak",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "weak",
+      "value"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "약화"
+    ],
+    "tagsKo": [
+      "약화",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DAGGER_SPRAY",
+    "nameKo": "단검 분사",
+    "normalizedName": "단검분사",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "모든 적에게 피해를 4만큼 2번 줍니다.",
+    "image": "cards/silent/dagger_spray.webp",
+    "damage": 4,
+    "block": null,
+    "hitCount": 2,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AllEnemies",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "aoe"
+    ],
+    "recommendTags": [
+      "aoe"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "aoe"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "광역기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DAGGER_THROW",
+    "nameKo": "단검 투척",
+    "normalizedName": "단검투척",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "피해를 9 줍니다. 카드를 1장 뽑습니다. 카드를 1장 버립니다.",
+    "image": "cards/silent/dagger_throw.webp",
+    "damage": 9,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "discard"
+    ],
+    "recommendTags": [
+      "sly",
+      "draw"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "discard",
+      "sly",
+      "draw"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "GRAND_FINALE",
+    "nameKo": "대단원의 막",
+    "normalizedName": "대단원의막",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "뽑을 카드 더미에 카드가 없을 때만 사용할 수 있습니다. 모든 적에게 피해를 60 줍니다.",
+    "image": "cards/silent/grand_finale.webp",
+    "damage": 60,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AllEnemies",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "aoe"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "aoe",
+      "extra_action"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "POUNCE",
+    "nameKo": "덮치기",
+    "normalizedName": "덮치기",
+    "cost": 2,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 12 줍니다. 다음에 사용하는 스킬 카드의 비용이 0 1 에너지이 됩니다.",
+    "image": "cards/silent/pounce.webp",
+    "damage": 12,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "extra_action"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "RICOCHET",
+    "nameKo": "도탄",
+    "normalizedName": "도탄",
+    "cost": 2,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "무작위 적에게 피해를 3만큼 4번 줍니다.",
+    "image": "cards/silent/ricochet.webp",
+    "damage": 3,
+    "block": null,
+    "hitCount": 4,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "RandomEnemy",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "sly",
+      "multi_hit"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "sly",
+      "multi_hit"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "연타기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ENVENOM",
+    "nameKo": "독 바르기",
+    "normalizedName": "독바르기",
+    "cost": 2,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "공격 카드가 막히지 않은 피해를 줄 때마다, 중독을 1 부여합니다.",
+    "image": "cards/silent/envenom.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "poison"
+    ],
+    "allTags": [
+      "power",
+      "extra_action",
+      "poison"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "-",
+      "act2": "△",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "POISONED_STAB",
+    "nameKo": "독 찌르기",
+    "normalizedName": "독찌르기",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "피해를 6 줍니다. 중독을 3 부여합니다.",
+    "image": "cards/silent/poisoned_stab.webp",
+    "damage": 6,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "poison"
+    ],
+    "recommendTags": [
+      "poison"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "poison"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DASH",
+    "nameKo": "돌진",
+    "normalizedName": "돌진",
+    "cost": 2,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "방어도를 10 얻습니다. 피해를 10 줍니다.",
+    "image": "cards/silent/dash.webp",
+    "damage": 10,
+    "block": 10,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "block",
+      "damage"
+    ],
+    "recommendTags": [
+      "value"
+    ],
+    "allTags": [
+      "attack",
+      "block",
+      "damage",
+      "value"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "EXPOSE",
+    "nameKo": "들춰내기",
+    "normalizedName": "들춰내기",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "대상 적의 모든 인공물과 방어도를 제거합니다. 취약을 2 부여합니다.",
+    "image": "cards/silent/expose.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "remove_buff",
+      "vulnerable"
+    ],
+    "allTags": [
+      "skill",
+      "exhaust",
+      "remove_buff",
+      "vulnerable"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "취약"
+    ],
+    "tagsKo": [
+      "버프 제거",
+      "취약"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FINISHER",
+    "nameKo": "마무리",
+    "normalizedName": "마무리",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "이번 턴에 사용한 공격 카드 1장당 피해를 6 줍니다.",
+    "image": "cards/silent/finisher.webp",
+    "damage": 6,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value",
+      "multi_hit"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value",
+      "multi_hit"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류",
+      "연타기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "CLOAK_AND_DAGGER",
+    "nameKo": "망토와 단검",
+    "normalizedName": "망토와단검",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "방어도를 6 얻습니다. 단도를 1장 손으로 가져옵니다.",
+    "image": "cards/silent/cloak_and_dagger.webp",
+    "damage": null,
+    "block": 6,
+    "hitCount": null,
+    "cardsDraw": 1,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "block",
+      "shiv"
+    ],
+    "recommendTags": [
+      "shiv"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "shiv"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도",
+      "민첩"
+    ],
+    "tagsKo": [
+      "단도"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DEADLY_POISON",
+    "nameKo": "맹독",
+    "normalizedName": "맹독",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "중독을 5 부여합니다.",
+    "image": "cards/silent/deadly_poison.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "poison"
+    ],
+    "recommendTags": [
+      "poison"
+    ],
+    "allTags": [
+      "skill",
+      "poison"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "MEMENTO_MORI",
+    "nameKo": "메멘토 모리",
+    "normalizedName": "메멘토모리",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 9 줍니다. 이번 턴에 버린 카드 1장당 피해량이 4 증가합니다.",
+    "image": "cards/silent/memento_mori.webp",
+    "damage": 9,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ECHOING_SLASH",
+    "nameKo": "메아리 참격",
+    "normalizedName": "메아리참격",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "모든 적에게 피해를 10 줍니다. 적을 처치할 때마다 이 효과를 반복합니다.",
+    "image": "cards/silent/echoing_slash.webp",
+    "damage": 10,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AllEnemies",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "aoe"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "aoe"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "aoe",
+      "extra_action"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "광역기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "STRANGLE",
+    "nameKo": "목 조르기",
+    "normalizedName": "목조르기",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 8 줍니다. 이번 턴에 카드를 사용할 때마다, 대상 적이 체력을 2 잃습니다.",
+    "image": "cards/silent/strangle.webp",
+    "damage": 8,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "NEUTRALIZE",
+    "nameKo": "무력화",
+    "normalizedName": "무력화",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Basic",
+    "rarityKo": "기본",
+    "description": "피해를 3 줍니다. 약화를 1 부여합니다.",
+    "image": "cards/silent/neutralize.webp",
+    "damage": 3,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "weak"
+    ],
+    "recommendTags": [],
+    "allTags": [
+      "attack",
+      "damage",
+      "weak"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "",
+    "extraAction": "",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [],
+    "coreCardsKo": []
+  },
+  {
+    "id": "INFINITE_BLADES",
+    "nameKo": "무한의 검날",
+    "normalizedName": "무한의검날",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "내 턴 시작 시, 단도를 1장 손으로 가져옵니다.",
+    "image": "cards/silent/infinite_blades.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "power",
+      "shiv"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "shiv"
+    ],
+    "allTags": [
+      "power",
+      "shiv",
+      "extra_action"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "단도"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "REFLEX",
+    "nameKo": "반사신경",
+    "normalizedName": "반사신경",
+    "cost": 3,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "카드를 2장 뽑습니다.",
+    "image": "cards/silent/reflex.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 2,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "draw"
+    ],
+    "recommendTags": [
+      "sly",
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "draw",
+      "sly"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FOOTWORK",
+    "nameKo": "발놀림",
+    "normalizedName": "발놀림",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "민첩을 2 얻습니다.",
+    "image": "cards/silent/footwork.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power",
+      "dexterity"
+    ],
+    "recommendTags": [
+      "dexterity"
+    ],
+    "allTags": [
+      "power",
+      "dexterity"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "민첩"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "OUTBREAK",
+    "nameKo": "발병",
+    "normalizedName": "발병",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "중독을 부여할 때마다, 모든 적에게 피해를 11 줍니다.",
+    "image": "cards/silent/outbreak.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "power",
+      "extra_action"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BACKSTAB",
+    "nameKo": "배신",
+    "normalizedName": "배신",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 11 줍니다.",
+    "image": "cards/silent/backstab.webp",
+    "damage": 11,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "소멸",
+      "선천성"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "exhaust",
+      "innate"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "exhaust",
+      "innate",
+      "extra_action"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SNAKEBITE",
+    "nameKo": "뱀 물기",
+    "normalizedName": "뱀물기",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "중독을 7 부여합니다.",
+    "image": "cards/silent/snakebite.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "보존"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "poison"
+    ],
+    "recommendTags": [
+      "poison",
+      "retain"
+    ],
+    "allTags": [
+      "skill",
+      "poison",
+      "retain"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "중독",
+      "보존"
+    ],
+    "tagsKo": [
+      "중독",
+      "보존"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "UNTOUCHABLE",
+    "nameKo": "범접 불가",
+    "normalizedName": "범접불가",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "방어도를 6 얻습니다.",
+    "image": "cards/silent/untouchable.webp",
+    "damage": null,
+    "block": 6,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [
+      "sly"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "sly"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활",
+      "민첩"
+    ],
+    "tagsKo": [
+      "교활"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "CORROSIVE_WAVE",
+    "nameKo": "부식성 파도",
+    "normalizedName": "부식성파도",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "이번 턴에 카드를 뽑을 때마다, 모든 적에게 중독을 2 부여합니다.",
+    "image": "cards/silent/corrosive_wave.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "poison"
+    ],
+    "allTags": [
+      "skill",
+      "extra_action",
+      "poison"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "-",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BULLET_TIME",
+    "nameKo": "불릿 타임",
+    "normalizedName": "불릿타임",
+    "cost": 3,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "이번 턴 동안 더 이상 카드를 뽑을 수 없습니다. 이번 턴 동안 손에 있는 모든 카드를 비용 없이 사용할 수 있습니다.",
+    "image": "cards/silent/bullet_time.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "extra_action",
+      "value"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SUCKER_PUNCH",
+    "nameKo": "불의의 일격",
+    "normalizedName": "불의의일격",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "피해를 8 줍니다. 약화를 1 부여합니다.",
+    "image": "cards/silent/sucker_punch.webp",
+    "damage": 8,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "weak"
+    ],
+    "recommendTags": [
+      "weak"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "weak"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "약화"
+    ],
+    "tagsKo": [
+      "약화"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "MALAISE",
+    "nameKo": "불쾌",
+    "normalizedName": "불쾌",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "적이 힘을 X 잃습니다. 약화를 X 부여합니다.",
+    "image": "cards/silent/malaise.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "exhaust",
+      "extra_action",
+      "value"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SNEAKY",
+    "nameKo": "비열함",
+    "normalizedName": "비열함",
+    "cost": 2,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "다른 플레이어가 적을 공격할 때마다, 방어도를 1 얻습니다.",
+    "image": "cards/silent/sneaky.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [],
+    "allTags": [
+      "power"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "",
+    "extraAction": "",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [],
+    "coreCardsKo": []
+  },
+  {
+    "id": "UP_MY_SLEEVE",
+    "nameKo": "비책",
+    "normalizedName": "비책",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "단도를 3장 손으로 가져옵니다. 이 카드의 비용이 1 감소합니다.",
+    "image": "cards/silent/up_my_sleeve.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 3,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "shiv"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "shiv",
+      "extra_action",
+      "value"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "MID",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "THE_HUNT",
+    "nameKo": "사냥",
+    "normalizedName": "사냥",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "피해를 10 줍니다. 치명타라면, 카드 보상을 추가로 얻습니다.",
+    "image": "cards/silent/the_hunt.webp",
+    "damage": 10,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "permanent_growth"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "exhaust",
+      "permanent_growth"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "영구 성장"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "MURDER",
+    "nameKo": "살해",
+    "normalizedName": "살해",
+    "cost": 3,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "피해를 1 줍니다. 이번 전투 동안 뽑은 카드 1장당 피해량이 1 증가합니다.",
+    "image": "cards/silent/murder.webp",
+    "damage": 1,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "HIGH",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "-",
+      "act2": "-",
+      "act3": "O"
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SURVIVOR",
+    "nameKo": "생존자",
+    "normalizedName": "생존자",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Basic",
+    "rarityKo": "기본",
+    "description": "방어도를 8 얻습니다. 카드를 1장 버립니다.",
+    "image": "cards/silent/survivor.webp",
+    "damage": null,
+    "block": 8,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block",
+      "discard"
+    ],
+    "recommendTags": [],
+    "allTags": [
+      "skill",
+      "block",
+      "discard"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "",
+    "extraAction": "",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [],
+    "coreCardsKo": []
+  },
+  {
+    "id": "LEADING_STRIKE",
+    "nameKo": "선제 타격",
+    "normalizedName": "선제타격",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "피해를 3 줍니다. 단도를 2장 손으로 가져옵니다.",
+    "image": "cards/silent/leading_strike.webp",
+    "damage": 3,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "attack",
+      "damage",
+      "shiv"
+    ],
+    "recommendTags": [
+      "shiv"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "shiv"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "단도"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "MASTER_PLANNER",
+    "nameKo": "설계의 대가",
+    "normalizedName": "설계의대가",
+    "cost": 2,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "스킬 카드를 사용 시, 그 카드가 교활을 얻습니다.",
+    "image": "cards/silent/master_planner.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "sly",
+      "scaling"
+    ],
+    "allTags": [
+      "power",
+      "sly",
+      "scaling"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "-",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "스케일링"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "HAND_TRICK",
+    "nameKo": "손기술",
+    "normalizedName": "손기술",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "방어도를 7 얻습니다. 이번 턴 동안 손에 있는 스킬 카드 1장에 교활을 추가합니다.",
+    "image": "cards/silent/hand_trick.webp",
+    "damage": null,
+    "block": 7,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [
+      "sly"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "sly"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DEFEND_SILENT",
+    "nameKo": "수비",
+    "normalizedName": "수비",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Basic",
+    "rarityKo": "기본",
+    "description": "방어도를 5 얻습니다.",
+    "image": "cards/silent/defend_silent.webp",
+    "damage": null,
+    "block": 5,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [],
+    "allTags": [
+      "skill",
+      "block"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "",
+    "extraAction": "",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [],
+    "coreCardsKo": []
+  },
+  {
+    "id": "HIDDEN_DAGGERS",
+    "nameKo": "숨겨진 단검",
+    "normalizedName": "숨겨진단검",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "카드를 2장 버립니다. 단도를 2장 손으로 가져옵니다.",
+    "image": "cards/silent/hidden_daggers.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 2,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "shiv",
+      "discard"
+    ],
+    "recommendTags": [
+      "shiv",
+      "sly"
+    ],
+    "allTags": [
+      "skill",
+      "shiv",
+      "discard",
+      "sly"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도",
+      "교활"
+    ],
+    "tagsKo": [
+      "단도",
+      "교활"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SPEEDSTER",
+    "nameKo": "스피드스터",
+    "normalizedName": "스피드스터",
+    "cost": 2,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "내 턴 동안 카드를 뽑을 때마다, 모든 적에게 피해를 2 줍니다.",
+    "image": "cards/silent/speedster.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "scaling"
+    ],
+    "allTags": [
+      "power",
+      "extra_action",
+      "scaling"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "-",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "스케일링"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "MIRAGE",
+    "nameKo": "신기루",
+    "normalizedName": "신기루",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "모든 적에게 부여된 중독과 동일한 만큼의 방어도를 얻습니다.",
+    "image": "cards/silent/mirage.webp",
+    "damage": 0,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "damage",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "poison"
+    ],
+    "allTags": [
+      "skill",
+      "damage",
+      "exhaust",
+      "extra_action",
+      "poison"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ADRENALINE",
+    "nameKo": "아드레날린",
+    "normalizedName": "아드레날린",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "1 에너지를 얻습니다. 카드를 2장 뽑습니다.",
+    "image": "cards/silent/adrenaline.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 2,
+    "energyGain": 1,
+    "target": "Self",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "draw",
+      "energy",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "draw",
+      "energy",
+      "exhaust",
+      "extra_action"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "HAZE",
+    "nameKo": "아지랑이",
+    "normalizedName": "아지랑이",
+    "cost": 3,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "모든 적에게 중독을 4 부여합니다.",
+    "image": "cards/silent/haze.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AllEnemies",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "aoe",
+      "poison"
+    ],
+    "recommendTags": [
+      "sly",
+      "poison"
+    ],
+    "allTags": [
+      "skill",
+      "aoe",
+      "poison",
+      "sly"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "교활",
+      "중독"
+    ],
+    "tagsKo": [
+      "교활",
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "NIGHTMARE",
+    "nameKo": "악몽",
+    "normalizedName": "악몽",
+    "cost": 3,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "카드를 1장 선택합니다. 다음 턴에, 그 카드의 복사본을 3장 손으로 가져옵니다.",
+    "image": "cards/silent/nightmare.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "소멸"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "exhaust"
+    ],
+    "recommendTags": [
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "exhaust",
+      "value"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "HIGH",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ASSASSINATE",
+    "nameKo": "암살",
+    "normalizedName": "암살",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "피해를 10 줍니다. 취약을 1 부여합니다.",
+    "image": "cards/silent/assassinate.webp",
+    "damage": 10,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "소멸",
+      "선천성"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "vulnerable",
+      "exhaust",
+      "innate"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "vulnerable"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "vulnerable",
+      "exhaust",
+      "innate",
+      "extra_action"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "취약"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "취약"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ABRASIVE",
+    "nameKo": "연마",
+    "normalizedName": "연마",
+    "cost": 3,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "민첩을 1 얻습니다. 가시를 4 얻습니다.",
+    "image": "cards/silent/abrasive.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "power",
+      "dexterity"
+    ],
+    "recommendTags": [
+      "sly",
+      "dexterity",
+      "thorns"
+    ],
+    "allTags": [
+      "power",
+      "dexterity",
+      "sly",
+      "thorns"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "△",
+      "act2": "-",
+      "act3": "-"
+    },
+    "synergyKo": [
+      "교활",
+      "민첩"
+    ],
+    "tagsKo": [
+      "교활",
+      "민첩",
+      "가시"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "PREPARED",
+    "nameKo": "예비",
+    "normalizedName": "예비",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "카드를 1장 뽑습니다. 카드를 1장 버립니다.",
+    "image": "cards/silent/prepared.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 1,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "draw",
+      "discard"
+    ],
+    "recommendTags": [
+      "sly",
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "draw",
+      "discard",
+      "sly"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ANTICIPATE",
+    "nameKo": "예측",
+    "normalizedName": "예측",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "이번 턴 동안 민첩을 2 얻습니다.",
+    "image": "cards/silent/anticipate.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "dexterity"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "dexterity"
+    ],
+    "allTags": [
+      "skill",
+      "dexterity",
+      "extra_action"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "민첩"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FOLLOW_THROUGH",
+    "nameKo": "완수",
+    "normalizedName": "완수",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "피해를 7 줍니다. 손에 다른 카드가 5장 이상 있다면, 1번 추가로 적중합니다.",
+    "image": "cards/silent/follow_through.webp",
+    "damage": 7,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value",
+      "multi_hit"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value",
+      "multi_hit"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류",
+      "연타기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "NOXIOUS_FUMES",
+    "nameKo": "유독 가스",
+    "normalizedName": "유독가스",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "내 턴 시작 시, 모든 적에게 중독을 2 부여합니다.",
+    "image": "cards/silent/noxious_fumes.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "poison",
+      "aoe"
+    ],
+    "allTags": [
+      "power",
+      "extra_action",
+      "poison",
+      "aoe"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "중독",
+      "광역기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "WRAITH_FORM",
+    "nameKo": "유령의 형상",
+    "normalizedName": "유령의형상",
+    "cost": 3,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Ancient",
+    "rarityKo": "고대의 존재",
+    "description": "불가침을 2 얻습니다. 내 턴 시작 시, 민첩을 1 잃습니다.",
+    "image": "cards/silent/wraith_form.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power",
+      "intangible"
+    ],
+    "recommendTags": [
+      "tempo"
+    ],
+    "allTags": [
+      "power",
+      "intangible",
+      "tempo"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "템포"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BLADE_OF_INK",
+    "nameKo": "잉크 칼날",
+    "normalizedName": "잉크칼날",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "잉크투성이 단도를 2장 손으로 가져옵니다.",
+    "image": "cards/silent/blade_of_ink.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 2,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "shiv"
+    ],
+    "recommendTags": [
+      "weak",
+      "shiv",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "shiv",
+      "weak",
+      "value"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "약화",
+      "단도"
+    ],
+    "tagsKo": [
+      "약화",
+      "단도",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "TOOLS_OF_THE_TRADE",
+    "nameKo": "작업 도구",
+    "normalizedName": "작업도구",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "내 턴 시작 시, 카드를 1장 뽑고 카드를 1장 버립니다.",
+    "image": "cards/silent/tools_of_the_trade.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power",
+      "discard"
+    ],
+    "recommendTags": [
+      "sly",
+      "draw"
+    ],
+    "allTags": [
+      "power",
+      "discard",
+      "sly",
+      "draw"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "AFTERIMAGE",
+    "nameKo": "잔상",
+    "normalizedName": "잔상",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "카드를 사용할 때마다, 방어도를 1 얻습니다.",
+    "image": "cards/silent/afterimage.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "power",
+      "extra_action"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "-",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FLICK_FLACK",
+    "nameKo": "재주넘기",
+    "normalizedName": "재주넘기",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "모든 적에게 피해를 6 줍니다.",
+    "image": "cards/silent/flick_flack.webp",
+    "damage": 6,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AllEnemies",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "aoe"
+    ],
+    "recommendTags": [
+      "sly",
+      "aoe"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "aoe",
+      "sly"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "광역기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "TACTICIAN",
+    "nameKo": "전략가",
+    "normalizedName": "전략가",
+    "cost": 3,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "1 에너지를 얻습니다.",
+    "image": "cards/silent/tactician.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": 1,
+    "target": "Self",
+    "keywords": [
+      "교활"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "energy"
+    ],
+    "recommendTags": [
+      "sly",
+      "energy"
+    ],
+    "allTags": [
+      "skill",
+      "energy",
+      "sly"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "교활"
+    ],
+    "tagsKo": [
+      "교활",
+      "에너지"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "EXPERTISE",
+    "nameKo": "전문성",
+    "normalizedName": "전문성",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "손에 있는 카드가 6장이 될 때까지 카드를 뽑습니다.",
+    "image": "cards/silent/expertise.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": 6,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "draw"
+    ],
+    "recommendTags": [
+      "draw"
+    ],
+    "allTags": [
+      "skill",
+      "draw"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ACCURACY",
+    "nameKo": "정밀",
+    "normalizedName": "정밀",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "단도의 피해량이 4 증가합니다.",
+    "image": "cards/silent/accuracy.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "power",
+      "shiv"
+    ],
+    "recommendTags": [
+      "shiv",
+      "scaling"
+    ],
+    "allTags": [
+      "power",
+      "shiv",
+      "scaling"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "HIGH",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "단도",
+      "스케일링"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "PINPOINT",
+    "nameKo": "정밀 사격",
+    "normalizedName": "정밀사격",
+    "cost": 3,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 15 줍니다. 이번 턴에 스킬 카드를 사용할 때마다 비용이 1 1 에너지 감소합니다.",
+    "image": "cards/silent/pinpoint.webp",
+    "damage": 15,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "extra_action"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "PRECISE_CUT",
+    "nameKo": "정밀한 베기",
+    "normalizedName": "정밀한베기",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 13 줍니다. 손에 있는 다른 카드 1장당 피해량이 2 감소합니다.",
+    "image": "cards/silent/precise_cut.webp",
+    "damage": 13,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "extra_action"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SUPPRESS",
+    "nameKo": "진압",
+    "normalizedName": "진압",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Ancient",
+    "rarityKo": "고대의 존재",
+    "description": "피해를 11 줍니다. 약화를 3 부여합니다.",
+    "image": "cards/silent/suppress.webp",
+    "damage": 11,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [
+      "선천성"
+    ],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage",
+      "weak",
+      "innate"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "weak"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "weak",
+      "innate",
+      "extra_action"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "약화"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "약화"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BUBBLE_BUBBLE",
+    "nameKo": "차오르는 독",
+    "normalizedName": "차오르는독",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "대상 적이 중독을 보유하고 있다면, 중독을 9 부여합니다.",
+    "image": "cards/silent/bubble_bubble.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "poison"
+    ],
+    "recommendTags": [
+      "poison"
+    ],
+    "allTags": [
+      "skill",
+      "poison"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "△"
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "PREDATOR",
+    "nameKo": "천적",
+    "normalizedName": "천적",
+    "cost": 2,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "피해를 15 줍니다. 다음 턴에, 카드를 2장 뽑습니다.",
+    "image": "cards/silent/predator.webp",
+    "damage": 15,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value",
+      "draw"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value",
+      "draw"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류",
+      "드로우"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ACCELERANT",
+    "nameKo": "촉진제",
+    "normalizedName": "촉진제",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "중독이 1번 추가로 발동합니다.",
+    "image": "cards/silent/accelerant.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "poison"
+    ],
+    "allTags": [
+      "power",
+      "poison"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "TRACKING",
+    "nameKo": "추적",
+    "normalizedName": "추적",
+    "cost": 2,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "약화 상태의 적이 공격 카드로 받는 피해가 2배가 됩니다.",
+    "image": "cards/silent/tracking.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "power"
+    ],
+    "recommendTags": [
+      "scaling"
+    ],
+    "allTags": [
+      "power",
+      "scaling"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "O",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [
+      "약화"
+    ],
+    "tagsKo": [
+      "스케일링"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FLANKING",
+    "nameKo": "측면 공격",
+    "normalizedName": "측면공격",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "이번 턴에 대상 적이 다른 플레이어에게 받는 공격 피해량이 2배가 됩니다.",
+    "image": "cards/silent/flanking.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill"
+    ],
+    "recommendTags": [],
+    "allTags": [
+      "skill"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "",
+    "extraAction": "",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FAN_OF_KNIVES",
+    "nameKo": "칼날 부채",
+    "normalizedName": "칼날부채",
+    "cost": 2,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "단도가 이제 모든 적을 대상으로 합니다. 단도를 4장 손으로 가져옵니다.",
+    "image": "cards/silent/fan_of_knives.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "power",
+      "shiv"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "aoe"
+    ],
+    "allTags": [
+      "power",
+      "shiv",
+      "extra_action",
+      "aoe"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "△",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "광역기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "KNIFE_TRAP",
+    "nameKo": "칼날 함정",
+    "normalizedName": "칼날함정",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "소멸된 카드 더미에 있는 모든 단도를 대상 적에게 사용합니다.",
+    "image": "cards/silent/knife_trap.webp",
+    "damage": 0,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "skill",
+      "damage",
+      "shiv"
+    ],
+    "recommendTags": [
+      "scaling",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "damage",
+      "shiv",
+      "scaling",
+      "value"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "-",
+      "act2": "O",
+      "act3": "O"
+    },
+    "synergyKo": [
+      "단도"
+    ],
+    "tagsKo": [
+      "스케일링",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "SLICE",
+    "nameKo": "칼질",
+    "normalizedName": "칼질",
+    "cost": 0,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "피해를 6 줍니다.",
+    "image": "cards/silent/slice.webp",
+    "damage": 6,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "extra_action"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "STRIKE_SILENT",
+    "nameKo": "타격",
+    "normalizedName": "타격",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Basic",
+    "rarityKo": "기본",
+    "description": "피해를 6 줍니다.",
+    "image": "cards/silent/strike_silent.webp",
+    "damage": 6,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [],
+    "allTags": [
+      "attack",
+      "damage"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "",
+    "extraAction": "",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BOUNCING_FLASK",
+    "nameKo": "탄성 플라스크",
+    "normalizedName": "탄성플라스크",
+    "cost": 2,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "무작위 적에게 중독을 3만큼 3번 부여합니다.",
+    "image": "cards/silent/bouncing_flask.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "RandomEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "poison"
+    ],
+    "recommendTags": [
+      "poison"
+    ],
+    "allTags": [
+      "skill",
+      "poison"
+    ],
+    "beginnerTier": "D",
+    "upgradeDependency": "HIGH",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "중독"
+    ],
+    "tagsKo": [
+      "중독"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "ESCAPE_PLAN",
+    "nameKo": "탈출구",
+    "normalizedName": "탈출구",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "카드를 1장 뽑습니다. 스킬 카드를 뽑았다면, 방어도를 3 얻습니다.",
+    "image": "cards/silent/escape_plan.webp",
+    "damage": null,
+    "block": 3,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "cantrip"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "extra_action",
+      "cantrip"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "캔트립"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "DEFLECT",
+    "nameKo": "튕겨내기",
+    "normalizedName": "튕겨내기",
+    "cost": 0,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Common",
+    "rarityKo": "일반",
+    "description": "방어도를 4 얻습니다.",
+    "image": "cards/silent/deflect.webp",
+    "damage": null,
+    "block": 4,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [
+      "extra_action"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "extra_action"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "추가 행동"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BURST",
+    "nameKo": "폭주",
+    "normalizedName": "폭주",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Rare",
+    "rarityKo": "희귀",
+    "description": "이번 턴에 다음에 사용하는 스킬 카드가 1번 추가로 사용됩니다.",
+    "image": "cards/silent/burst.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "value"
+    ],
+    "allTags": [
+      "skill",
+      "extra_action",
+      "value"
+    ],
+    "beginnerTier": "C",
+    "upgradeDependency": "HIGH",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "추가 행동",
+      "밸류"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "FLECHETTES",
+    "nameKo": "프레췌",
+    "normalizedName": "프레췌",
+    "cost": 1,
+    "type": "Attack",
+    "typeKo": "공격",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "손에 있는 스킬 카드 1장당 피해를 5 줍니다.",
+    "image": "cards/silent/flechettes.webp",
+    "damage": 5,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "AnyEnemy",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "attack",
+      "damage"
+    ],
+    "recommendTags": [
+      "value",
+      "multi_hit"
+    ],
+    "allTags": [
+      "attack",
+      "damage",
+      "value",
+      "multi_hit"
+    ],
+    "beginnerTier": "A",
+    "upgradeDependency": "MID",
+    "extraAction": "X",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [],
+    "tagsKo": [
+      "밸류",
+      "연타기"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "PHANTOM_BLADES",
+    "nameKo": "환영검",
+    "normalizedName": "환영검",
+    "cost": 1,
+    "type": "Power",
+    "typeKo": "파워",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "단도가 보존을 얻습니다. 매 턴마다 처음으로 사용하는 단도의 피해량이 9 증가합니다.",
+    "image": "cards/silent/phantom_blades.webp",
+    "damage": null,
+    "block": null,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [
+      "SHIV"
+    ],
+    "autoTags": [
+      "power",
+      "shiv",
+      "retain"
+    ],
+    "recommendTags": [
+      "shiv",
+      "retain"
+    ],
+    "allTags": [
+      "power",
+      "shiv",
+      "retain"
+    ],
+    "beginnerTier": "B",
+    "upgradeDependency": "MID",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "O",
+      "act2": "△",
+      "act3": "-"
+    },
+    "synergyKo": [
+      "단도",
+      "보존"
+    ],
+    "tagsKo": [
+      "단도",
+      "보존"
+    ],
+    "coreCardsKo": []
+  },
+  {
+    "id": "BLUR",
+    "nameKo": "흐릿함",
+    "normalizedName": "흐릿함",
+    "cost": 1,
+    "type": "Skill",
+    "typeKo": "스킬",
+    "rarity": "Uncommon",
+    "rarityKo": "고급",
+    "description": "방어도를 5 얻습니다. 다음 턴 시작 시 방어도가 사라지지 않습니다.",
+    "image": "cards/silent/blur.webp",
+    "damage": null,
+    "block": 5,
+    "hitCount": null,
+    "cardsDraw": null,
+    "energyGain": null,
+    "target": "Self",
+    "keywords": [],
+    "spawnsCards": [],
+    "autoTags": [
+      "skill",
+      "block"
+    ],
+    "recommendTags": [
+      "extra_action",
+      "scaling"
+    ],
+    "allTags": [
+      "skill",
+      "block",
+      "extra_action",
+      "scaling"
+    ],
+    "beginnerTier": "S",
+    "upgradeDependency": "LOW",
+    "extraAction": "O",
+    "scaling": {
+      "act1": "",
+      "act2": "",
+      "act3": ""
+    },
+    "synergyKo": [
+      "민첩"
+    ],
+    "tagsKo": [
+      "추가 행동",
+      "스케일링"
+    ],
+    "coreCardsKo": []
+  }
+]
