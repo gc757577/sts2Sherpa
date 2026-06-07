@@ -20,7 +20,7 @@ enum class AppScreen(
     Recommender("카드 추천"),
     Encyclopedia("카드 백과사전"),
     TierList("티어리스트"),
-    DeckAnalysis("덱 분석"),
+    DeckAnalysis("덱 실험실"),
     BuildCollection("빌드 모음"),
     Help("도움말"),
 }

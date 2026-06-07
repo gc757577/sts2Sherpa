@@ -218,6 +218,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             description = description,
             source = "덱 실험실",
             successMessage = "실험 덱이 빌드 모음에 저장되었습니다.",
+            useLabCompletion = true,
         )
     }
 
@@ -263,6 +264,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             description = description,
             source = "직접 생성",
             successMessage = "빌드가 저장되었습니다.",
+            useLabCompletion = true,
         )
     }
 
@@ -437,6 +439,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         source: String,
         successMessage: String,
         closeCurrentDeckDialog: Boolean = false,
+        useLabCompletion: Boolean = false,
     ) {
         _uiState.update { currentState ->
             val trimmedName = name.trim()
@@ -447,7 +450,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 return@update currentState.copy(buildMessage = "덱이 비어 있어 저장할 수 없습니다.")
             }
 
-            val directionLabel = BuildAnalyzer.directionLabel(deck)
+            val directionLabel = if (useLabCompletion) {
+                BuildAnalyzer.labDirectionLabel(deck)
+            } else {
+                BuildAnalyzer.directionLabel(deck)
+            }
             val now = System.currentTimeMillis()
             val savedBuild = SavedBuild(
                 id = "build_$now",
@@ -455,7 +462,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 description = description.trim(),
                 deck = deck,
                 totalCardCount = deck.sumOf { it.count },
-                completionScore = BuildAnalyzer.completionScore(deck),
+                completionScore = if (useLabCompletion) {
+                    BuildAnalyzer.labCompletionScore(deck)
+                } else {
+                    BuildAnalyzer.completionScore(deck)
+                },
                 directionLabel = directionLabel,
                 source = source,
                 createdAt = now,

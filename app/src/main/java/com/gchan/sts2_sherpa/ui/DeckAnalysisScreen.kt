@@ -51,9 +51,11 @@ fun DeckAnalysisScreen(
     modifier: Modifier = Modifier,
 ) {
     var isSaveDialogOpen by remember { mutableStateOf(false) }
-    val analysis = remember(deckCards) { RecommendationEngine.analyzeDeck(deckCards) }
-    val direction = remember(deckCards) { BuildAnalyzer.directionLabel(deckCards) }
-    val completionScore = remember(deckCards) { BuildAnalyzer.completionScore(deckCards) }
+    val addedDeckCards = remember(deckCards) { BuildAnalyzer.addedCardsOnly(deckCards) }
+    val analysis = remember(addedDeckCards) { RecommendationEngine.analyzeDeck(addedDeckCards) }
+    val totalCardCount = remember(deckCards) { deckCards.sumOf { it.count } }
+    val direction = remember(deckCards) { BuildAnalyzer.labDirectionLabel(deckCards) }
+    val completionScore = remember(deckCards) { BuildAnalyzer.labCompletionScore(deckCards) }
 
     LazyColumn(
         modifier = modifier
@@ -70,7 +72,7 @@ fun DeckAnalysisScreen(
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "추천 플레이 덱과 분리된 실험 덱을 직접 만들고 저장합니다.",
+                text = "기본 12장 덱을 기준으로, 추가한 카드들이 공격·수비·드로우·파워·시너지를 얼마나 보강하는지 확인합니다.",
                 modifier = Modifier.padding(top = 4.dp),
                 color = Color(0xFFE8D7A2),
             )
@@ -78,7 +80,11 @@ fun DeckAnalysisScreen(
         item {
             InfoCard(
                 title = "완성도",
-                body = "$completionScore% · $direction · 총 ${analysis.deckSize}장",
+                body = if (completionScore == 0) {
+                    "아직 시작 덱 상태입니다. 카드를 추가해 덱을 실험해보세요."
+                } else {
+                    "$completionScore% · $direction · 총 ${totalCardCount}장 · 추가 ${analysis.deckSize}장"
+                },
             ) {
                 LinearProgressIndicator(
                     progress = { completionScore / 100f },
@@ -258,7 +264,14 @@ private fun StatGrid(stats: List<Pair<String, Int>>) {
                         title = label,
                         body = "${value}장",
                         modifier = Modifier.weight(1f),
-                    )
+                    ) {
+                        LinearProgressIndicator(
+                            progress = { (value / roleTarget(label).toFloat()).coerceIn(0f, 1f) },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFFD6B15E),
+                            trackColor = Color(0xFF292319),
+                        )
+                    }
                 }
                 if (rowStats.size == 1) {
                     Column(modifier = Modifier.weight(1f)) {}
@@ -267,6 +280,14 @@ private fun StatGrid(stats: List<Pair<String, Int>>) {
         }
     }
 }
+
+private fun roleTarget(label: String): Int =
+    when (label) {
+        "공격 역할", "방어 역할" -> 3
+        "드로우", "파워" -> 2
+        "에너지" -> 1
+        else -> 3
+    }
 
 @Composable
 private fun InfoCard(

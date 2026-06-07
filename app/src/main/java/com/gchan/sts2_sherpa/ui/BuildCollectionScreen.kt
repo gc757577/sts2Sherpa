@@ -198,8 +198,8 @@ private fun BuildEditorDialog(
     var deck by remember(startingDeck) { mutableStateOf(startingDeck) }
     var isCardPickerOpen by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val direction = remember(deck) { BuildAnalyzer.directionLabel(deck) }
-    val completionScore = remember(deck) { BuildAnalyzer.completionScore(deck) }
+    val direction = remember(deck) { BuildAnalyzer.labDirectionLabel(deck) }
+    val completionScore = remember(deck) { BuildAnalyzer.labCompletionScore(deck) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -256,7 +256,11 @@ private fun BuildEditorDialog(
                 }
                 item {
                     Text(
-                        text = "완성도 $completionScore% · $direction · 총 ${deck.sumOf { it.count }}장",
+                        text = if (completionScore == 0) {
+                            "완성도 0% · 아직 시작 덱 상태입니다."
+                        } else {
+                            "완성도 $completionScore% · $direction · 총 ${deck.sumOf { it.count }}장"
+                        },
                         color = Color(0xFFFFE0A0),
                         fontWeight = FontWeight.SemiBold,
                     )

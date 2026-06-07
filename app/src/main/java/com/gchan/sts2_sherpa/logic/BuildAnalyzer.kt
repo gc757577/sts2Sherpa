@@ -29,6 +29,32 @@ object BuildAnalyzer {
         return score.coerceIn(0, 100)
     }
 
+    fun labCompletionScore(deck: List<DeckCard>): Int {
+        val addedDeck = addedCardsOnly(deck)
+        if (addedDeck.isEmpty()) return 0
+
+        val analysis = RecommendationEngine.analyzeDeck(addedDeck)
+        var score = 0
+        score += min(analysis.deckSize * 6, 30)
+        score += min(analysis.pickedAttackCount * 7, 18)
+        score += min(analysis.pickedBlockCount * 7, 18)
+        score += min(analysis.drawCount * 8, 16)
+        score += min(analysis.energyCount * 8, 12)
+        score += min(analysis.powerCount * 5, 15)
+        if (analysis.majorSynergyTags.isNotEmpty()) score += 12
+        return score.coerceIn(0, 100)
+    }
+
+    fun labDirectionLabel(deck: List<DeckCard>): String =
+        directionLabel(addedCardsOnly(deck))
+
+    fun addedCardsOnly(deck: List<DeckCard>): List<DeckCard> =
+        deck.mapNotNull { deckCard ->
+            val baselineCount = STARTING_DECK_COUNTS.getOrDefault(deckCard.card.id, 0)
+            val addedCount = deckCard.count - baselineCount
+            if (addedCount > 0) deckCard.copy(count = addedCount) else null
+        }
+
     fun defaultPlayBuildName(directionLabel: String): String =
         when {
             directionLabel.contains("중독") -> "중독 플레이 덱"
@@ -38,3 +64,9 @@ object BuildAnalyzer {
         }
 }
 
+private val STARTING_DECK_COUNTS = mapOf(
+    "STRIKE_SILENT" to 5,
+    "DEFEND_SILENT" to 5,
+    "NEUTRALIZE" to 1,
+    "SURVIVOR" to 1,
+)

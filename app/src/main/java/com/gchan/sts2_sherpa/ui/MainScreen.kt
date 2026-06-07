@@ -253,7 +253,7 @@ fun MainScreen(
 
                 AppScreen.DeckAnalysis -> DeckAnalysisScreen(
                     deckCards = uiState.labDeck,
-                    defaultBuildName = BuildAnalyzer.defaultPlayBuildName(BuildAnalyzer.directionLabel(uiState.labDeck))
+                    defaultBuildName = BuildAnalyzer.defaultPlayBuildName(BuildAnalyzer.labDirectionLabel(uiState.labDeck))
                         .replace("플레이", "실험"),
                     onAddCardClick = onOpenLabDeckAddCardPicker,
                     onRemoveDeckCard = onRemoveLabDeckCard,
