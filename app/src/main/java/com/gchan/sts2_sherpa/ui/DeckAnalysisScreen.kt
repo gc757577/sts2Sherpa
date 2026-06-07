@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -56,6 +57,28 @@ fun DeckAnalysisScreen(
     val totalCardCount = remember(deckCards) { deckCards.sumOf { it.count } }
     val direction = remember(deckCards) { BuildAnalyzer.labDirectionLabel(deckCards) }
     val completionScore = remember(deckCards) { BuildAnalyzer.labCompletionScore(deckCards) }
+    val animatedCompletion by animateFloatAsState(
+        targetValue = completionScore / 100f,
+        label = "lab-completion-progress",
+    )
+    val roleStats = remember(analysis) {
+        listOf(
+            RoleProgress("공격", analysis.pickedAttackCount, 3),
+            RoleProgress("수비", analysis.pickedBlockCount, 3),
+            RoleProgress("드로우", analysis.drawCount, 3),
+            RoleProgress("에너지", analysis.energyCount, 1),
+            RoleProgress("파워", analysis.powerCount, 2),
+            RoleProgress(
+                "시너지",
+                listOf(
+                    analysis.tagCounts.getOrDefault("poison", 0),
+                    analysis.tagCounts.getOrDefault("shiv", 0),
+                    analysis.tagCounts.getOrDefault("sly", 0),
+                ).maxOrNull() ?: 0,
+                3,
+            ),
+        )
+    }
 
     LazyColumn(
         modifier = modifier
@@ -78,69 +101,39 @@ fun DeckAnalysisScreen(
             )
         }
         item {
-            InfoCard(
-                title = "완성도",
-                body = if (completionScore == 0) {
-                    "아직 시작 덱 상태입니다. 카드를 추가해 덱을 실험해보세요."
-                } else {
-                    "$completionScore% · $direction · 총 ${totalCardCount}장 · 추가 ${analysis.deckSize}장"
-                },
-            ) {
-                LinearProgressIndicator(
-                    progress = { completionScore / 100f },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Color(0xFFD6B15E),
-                    trackColor = Color(0xFF292319),
+            CompletionCard(
+                completionScore = completionScore,
+                progress = animatedCompletion,
+                direction = direction,
+                totalCardCount = totalCardCount,
+                addedCardCount = analysis.deckSize,
+            )
+        }
+        item {
+            LabActionButtons(
+                onAddCardClick = onAddCardClick,
+                onSaveClick = { isSaveDialogOpen = true },
+                onResetDeck = onResetDeck,
+                onClearDeck = onClearDeck,
+                canSave = deckCards.isNotEmpty(),
+            )
+        }
+        item {
+            CompactRoleGrid(roleStats = roleStats)
+        }
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "실험 덱 카드",
+                    color = Color(0xFFFFE0A0),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                LabDeckGrid(
+                    deckCards = deckCards,
+                    onRemoveDeckCard = onRemoveDeckCard,
                 )
             }
-        }
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(
-                    onClick = onResetDeck,
-                    modifier = Modifier.weight(1f),
-                    border = BorderStroke(1.dp, Color(0xFFD6B15E)),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFE0A0)),
-                ) {
-                    Text("시작 덱")
-                }
-                OutlinedButton(
-                    onClick = onClearDeck,
-                    modifier = Modifier.weight(1f),
-                    border = BorderStroke(1.dp, Color(0xFFB36A4A)),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFC0A8)),
-                ) {
-                    Text("빈 덱")
-                }
-                Button(
-                    onClick = { isSaveDialogOpen = true },
-                    modifier = Modifier.weight(1f),
-                    enabled = deckCards.isNotEmpty(),
-                ) {
-                    Text("저장")
-                }
-            }
-        }
-        item {
-            StatGrid(
-                stats = listOf(
-                    "공격 역할" to analysis.pickedAttackCount,
-                    "방어 역할" to analysis.pickedBlockCount,
-                    "파워" to analysis.powerCount,
-                    "드로우" to analysis.drawCount,
-                    "에너지" to analysis.energyCount,
-                    "중독" to analysis.tagCounts.getOrDefault("poison", 0),
-                    "단도" to analysis.tagCounts.getOrDefault("shiv", 0),
-                    "교활" to analysis.tagCounts.getOrDefault("sly", 0),
-                ),
-            )
-        }
-        item {
-            LabDeckGrid(
-                deckCards = deckCards,
-                onAddCardClick = onAddCardClick,
-                onRemoveDeckCard = onRemoveDeckCard,
-            )
         }
     }
 
@@ -157,31 +150,205 @@ fun DeckAnalysisScreen(
 }
 
 @Composable
+private fun CompletionCard(
+    completionScore: Int,
+    progress: Float,
+    direction: String,
+    totalCardCount: Int,
+    addedCardCount: Int,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, Color(0xFF51452F)),
+        colors = CardDefaults.cardColors(containerColor = Color(0xAA17140F)),
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(7.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text(
+                        text = "덱 완성도",
+                        color = Color(0xFFFFE0A0),
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = "$direction · 총 ${totalCardCount}장 · 추가 ${addedCardCount}장",
+                        color = Color(0xFFE8D7A2),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                Text(
+                    text = "$completionScore%",
+                    color = Color(0xFFFFE0A0),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFD6B15E),
+                trackColor = Color(0xFF292319),
+            )
+            if (completionScore == 0) {
+                Text(
+                    text = "아직 시작 덱 상태입니다. 카드를 추가해 덱을 실험해보세요.",
+                    color = Color(0xFFBEB29A),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LabActionButtons(
+    onAddCardClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onResetDeck: () -> Unit,
+    onClearDeck: () -> Unit,
+    canSave: Boolean,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = onAddCardClick,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFD6B15E),
+                    contentColor = Color(0xFF17140F),
+                ),
+            ) {
+                Text("카드 추가", fontWeight = FontWeight.Bold)
+            }
+            Button(
+                onClick = onSaveClick,
+                modifier = Modifier.weight(1f),
+                enabled = canSave,
+            ) {
+                Text("저장")
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(
+                onClick = onResetDeck,
+                modifier = Modifier.weight(1f),
+                border = BorderStroke(1.dp, Color(0xFFD6B15E)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFE0A0)),
+            ) {
+                Text("시작 덱")
+            }
+            OutlinedButton(
+                onClick = onClearDeck,
+                modifier = Modifier.weight(1f),
+                border = BorderStroke(1.dp, Color(0xFFB36A4A)),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFC0A8)),
+            ) {
+                Text("빈 덱")
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompactRoleGrid(roleStats: List<RoleProgress>) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        roleStats.chunked(2).forEach { rowStats ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                rowStats.forEach { stat ->
+                    CompactRoleCard(
+                        stat = stat,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (rowStats.size == 1) {
+                    Column(modifier = Modifier.weight(1f)) {}
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompactRoleCard(
+    stat: RoleProgress,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, Color(0xFF51452F)),
+        colors = CardDefaults.cardColors(containerColor = Color(0xAA17140F)),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = stat.label,
+                    color = Color(0xFFFFE0A0),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = "${stat.value}/${stat.target}",
+                    color = Color(0xFFE8D7A2),
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+            LinearProgressIndicator(
+                progress = { stat.progress },
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFD6B15E),
+                trackColor = Color(0xFF292319),
+            )
+        }
+    }
+}
+
+private data class RoleProgress(
+    val label: String,
+    val value: Int,
+    val target: Int,
+) {
+    val progress: Float = (value / target.toFloat()).coerceIn(0f, 1f)
+}
+
+@Composable
 private fun LabDeckGrid(
     deckCards: List<DeckCard>,
-    onAddCardClick: () -> Unit,
     onRemoveDeckCard: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(top = 4.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        val entries = deckCards.map<DeckCard, Any> { it } + LabAddTileMarker
-        entries.chunked(4).forEach { rowItems ->
+        if (deckCards.isEmpty()) {
+            Text(
+                text = "실험 덱이 비어 있습니다.",
+                color = Color(0xFFBEB29A),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        deckCards.chunked(4).forEach { rowItems ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                rowItems.forEach { item ->
-                    when (item) {
-                        is DeckCard -> EditableDeckCardItem(
-                            deckCard = item,
-                            onRemoveClick = { onRemoveDeckCard(item.card.id) },
-                            modifier = Modifier.weight(1f),
-                        )
-
-                        LabAddTileMarker -> DeckAddCardTile(
-                            onClick = onAddCardClick,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
+                rowItems.forEach { deckCard ->
+                    EditableDeckCardItem(
+                        deckCard = deckCard,
+                        onRemoveClick = { onRemoveDeckCard(deckCard.card.id) },
+                        modifier = Modifier.weight(1f),
+                    )
                 }
                 repeat(4 - rowItems.size) {
                     Column(modifier = Modifier.weight(1f)) {}
@@ -249,66 +416,5 @@ private fun EditableDeckCardItem(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth(),
         )
-    }
-}
-
-private object LabAddTileMarker
-
-@Composable
-private fun StatGrid(stats: List<Pair<String, Int>>) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        stats.chunked(2).forEach { rowStats ->
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                rowStats.forEach { (label, value) ->
-                    InfoCard(
-                        title = label,
-                        body = "${value}장",
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        LinearProgressIndicator(
-                            progress = { (value / roleTarget(label).toFloat()).coerceIn(0f, 1f) },
-                            modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFFD6B15E),
-                            trackColor = Color(0xFF292319),
-                        )
-                    }
-                }
-                if (rowStats.size == 1) {
-                    Column(modifier = Modifier.weight(1f)) {}
-                }
-            }
-        }
-    }
-}
-
-private fun roleTarget(label: String): Int =
-    when (label) {
-        "공격 역할", "방어 역할" -> 3
-        "드로우", "파워" -> 2
-        "에너지" -> 1
-        else -> 3
-    }
-
-@Composable
-private fun InfoCard(
-    title: String,
-    body: String,
-    modifier: Modifier = Modifier,
-    extraContent: @Composable () -> Unit = {},
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(10.dp),
-        border = BorderStroke(1.dp, Color(0xFF51452F)),
-        colors = CardDefaults.cardColors(containerColor = Color(0xAA17140F)),
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text(title, color = Color(0xFFFFE0A0), fontWeight = FontWeight.Bold)
-            Text(body, color = Color(0xFFE8D7A2), style = MaterialTheme.typography.bodyMedium)
-            extraContent()
-        }
     }
 }
