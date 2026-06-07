@@ -7,6 +7,11 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -107,6 +113,7 @@ fun MainScreen(
 ) {
     val context = LocalContext.current
     var pendingCameraImageUri by remember { mutableStateOf<Uri?>(null) }
+    var isHelpDialogOpen by remember { mutableStateOf(false) }
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
     ) { isSuccess ->
@@ -168,6 +175,7 @@ fun MainScreen(
                 onRewardCardClick = onRewardCardClick,
                 onDeckClick = onDeckClick,
                 onSkipClick = onSkipClick,
+                onHelpClick = { isHelpDialogOpen = true },
                 onCaptureCameraClick = {
                     if (
                         ContextCompat.checkSelfPermission(
@@ -223,6 +231,12 @@ fun MainScreen(
                 onDismissRequest = onDismissDeck,
                 onRemoveDeckCard = onRemoveDeckCard,
                 onResetDeck = onResetDeck,
+            )
+        }
+
+        if (isHelpDialogOpen) {
+            HelpDialog(
+                onDismissRequest = { isHelpDialogOpen = false },
             )
         }
     }
@@ -292,6 +306,7 @@ private fun RewardSelectionContent(
     onRewardCardClick: (SilentCard) -> Unit,
     onDeckClick: () -> Unit,
     onSkipClick: () -> Unit,
+    onHelpClick: () -> Unit,
     onCaptureCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -303,6 +318,11 @@ private fun RewardSelectionContent(
     Box(
         modifier = modifier.padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
+        HelpButton(
+            onClick = onHelpClick,
+            modifier = Modifier.align(Alignment.TopStart),
+        )
+
         Row(
             modifier = Modifier.align(Alignment.TopEnd),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -357,6 +377,7 @@ private fun RewardSelectionContent(
             onSkipClick = onSkipClick,
             onCaptureCameraClick = onCaptureCameraClick,
             isRecognizing = uiState.isRecognizing,
+            isSkipRecommended = uiState.recommendationResult?.action == RecommendationAction.SKIP,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
@@ -369,6 +390,7 @@ private fun BottomActionButtons(
     onSkipClick: () -> Unit,
     onCaptureCameraClick: () -> Unit,
     isRecognizing: Boolean,
+    isSkipRecommended: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -382,22 +404,52 @@ private fun BottomActionButtons(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        OutlinedButton(
+        SkipButton(
+            isSkipRecommended = isSkipRecommended,
             onClick = onSkipClick,
             modifier = Modifier.fillMaxWidth(),
-            border = BorderStroke(1.dp, Gold),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = PanelDark,
-                contentColor = GoldLight,
-            ),
-            shape = RoundedCornerShape(10.dp),
-        ) {
-            Text(
-                text = "스킵",
-                modifier = Modifier.padding(vertical = 5.dp),
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
+        )
+    }
+}
+
+@Composable
+private fun SkipButton(
+    isSkipRecommended: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "skip-button-pulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isSkipRecommended) 1.04f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "skip-button-scale",
+    )
+    val borderColor = if (isSkipRecommended) Color(0xFFFFE68A) else Gold
+    val containerColor = if (isSkipRecommended) Color(0x665B4521) else PanelDark
+    val contentColor = if (isSkipRecommended) Color(0xFFFFF0B8) else GoldLight
+
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.graphicsLayer {
+            scaleX = pulseScale
+            scaleY = pulseScale
+        },
+        border = BorderStroke(if (isSkipRecommended) 2.dp else 1.dp, borderColor),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
+        shape = RoundedCornerShape(10.dp),
+    ) {
+        Text(
+            text = if (isSkipRecommended) "✨ 스킵 추천" else "스킵",
+            modifier = Modifier.padding(vertical = 5.dp),
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
@@ -449,6 +501,28 @@ private fun DeckCountBadge(
             style = MaterialTheme.typography.titleMedium,
             color = GoldLight,
             fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+@Composable
+private fun HelpButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(999.dp),
+        color = PanelDark,
+        border = BorderStroke(1.dp, Gold),
+        tonalElevation = 4.dp,
+    ) {
+        Text(
+            text = "?",
+            modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.titleMedium,
+            color = GoldLight,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
@@ -598,6 +672,11 @@ private fun RecommendationPanel(
                     text = "그래도 원하면 후보 카드를 선택해 덱에 추가할 수 있습니다.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MutedText,
+                )
+                Text(
+                    text = "이번 보상은 카드를 추가하지 않는 선택이 더 안정적입니다. 아래 스킵 버튼을 눌러 넘길 수 있습니다.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = GoldLight,
                 )
             } else {
                 Text(

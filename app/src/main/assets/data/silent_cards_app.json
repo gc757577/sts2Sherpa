@@ -3201,17 +3201,14 @@
     "spawnsCards": [],
     "autoTags": [
       "attack",
-      "damage",
-      "aoe"
+      "damage"
     ],
     "recommendTags": [
-      "sly",
-      "aoe"
+      "sly"
     ],
     "allTags": [
       "attack",
       "damage",
-      "aoe",
       "sly"
     ],
     "beginnerTier": "A",

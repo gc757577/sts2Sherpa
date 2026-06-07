@@ -33,6 +33,7 @@ data class ScoreBreakdown(
 data class DeckAnalysis(
     val deckSize: Int,
     val tagCounts: Map<String, Int>,
+    val cardCounts: Map<String, Int>,
     val pickedAttackCount: Int,
     val pickedBlockCount: Int,
     val powerCount: Int,
@@ -109,8 +110,10 @@ object RecommendationEngine {
 
     fun analyzeDeck(currentDeck: List<DeckCard>): DeckAnalysis {
         val tagCounts = mutableMapOf<String, Int>()
+        val cardCounts = mutableMapOf<String, Int>()
         currentDeck.forEach { deckCard ->
-            deckCard.card.allTags.forEach { tag ->
+            cardCounts[deckCard.card.id] = cardCounts.getOrDefault(deckCard.card.id, 0) + deckCard.count
+            deckCard.card.effectiveTags().forEach { tag ->
                 tagCounts[tag] = tagCounts.getOrDefault(tag, 0) + deckCard.count
             }
         }
@@ -118,6 +121,7 @@ object RecommendationEngine {
         return DeckAnalysis(
             deckSize = currentDeck.sumOf { it.count },
             tagCounts = tagCounts,
+            cardCounts = cardCounts,
             pickedAttackCount = countPickedAttackCards(currentDeck),
             pickedBlockCount = countPickedBlockCards(currentDeck),
             powerCount = currentDeck.countTaggedCards("power"),
@@ -194,6 +198,11 @@ object RecommendationEngine {
             addScore = ::addScore,
         )
         applyFootworkRule(
+            candidate = candidate,
+            deckAnalysis = deckAnalysis,
+            addScore = ::addScore,
+        )
+        applyDuplicatePenalty(
             candidate = candidate,
             deckAnalysis = deckAnalysis,
             addScore = ::addScore,
@@ -301,7 +310,7 @@ object RecommendationEngine {
         deckAnalysis: DeckAnalysis,
         addScore: (String, Int, String) -> Unit,
     ) {
-        val tags = candidate.allTags.toSet()
+        val tags = candidate.effectiveTags()
         val tagCounts = deckAnalysis.tagCounts
         val synergyMultiplier = if (deckAnalysis.pickedAttackCount < 2 || deckAnalysis.pickedBlockCount < 2) {
             0.5
@@ -385,7 +394,7 @@ object RecommendationEngine {
         deckAnalysis: DeckAnalysis,
         addScore: (String, Int, String) -> Unit,
     ) {
-        val tags = candidate.allTags.toSet()
+        val tags = candidate.effectiveTags()
         if (deckAnalysis.powerCount >= deckAnalysis.drawCount + 2) {
             if ("power" in tags) {
                 addScore(
@@ -447,6 +456,21 @@ object RecommendationEngine {
         addScore: (String, Int, String) -> Unit,
     ) {
         val synergyTag = getFinisherSynergyTag(candidate) ?: return
+        val synergyCount = deckAnalysis.tagCounts.countOf(synergyTag)
+        if (deckAnalysis.deckSize < FINISHER_MIN_DECK_SIZE || synergyCount < FINISHER_REQUIRED_SYNERGY_COUNT) {
+            addScore(
+                "피니셔 조건 미달",
+                -100,
+                "피니셔 카드는 관련 시너지 카드가 3장 이상 있을 때 가치가 올라갑니다.",
+            )
+            return
+        }
+        addScore(
+            "피니셔 시너지 충족",
+            25,
+            "이 카드는 피니셔 카드라 덱이 어느 정도 완성된 뒤 가치가 올라가며, 현재 덱에 ${synergyTag.displaySynergyName()} 시너지 카드가 ${synergyCount}장 있어 후반 마무리 카드로 활용하기 좋습니다.",
+        )
+        return
         if (deckAnalysis.deckSize < 20) {
             addScore(
                 "피니셔 초반 감점",
@@ -474,6 +498,47 @@ object RecommendationEngine {
                 "첫 발놀림 보정",
                 100,
                 "첫 발놀림은 사일런트의 방어 안정성을 크게 올려 거의 항상 좋은 선택입니다.",
+            )
+        }
+    }
+
+    private fun applyDuplicatePenalty(
+        candidate: SilentCard,
+        deckAnalysis: DeckAnalysis,
+        addScore: (String, Int, String) -> Unit,
+    ) {
+        val duplicateCount = getDeckCardCount(deckAnalysis, candidate.id)
+        if (duplicateCount <= 0) return
+
+        if (isFinisher(candidate)) {
+            addScore(
+                "피니셔 중복 감점",
+                -40,
+                "피니셔 카드는 조건을 타는 카드라 같은 카드를 여러 장 넣는 것은 초보자에게 부담이 큽니다.",
+            )
+            return
+        }
+
+        if (isDuplicatePenaltyExemptCard(candidate) && duplicateCount == 1) {
+            addScore(
+                "핵심 카드 중복 완화",
+                -10,
+                "이미 보유 중인 핵심 카드지만 2장까지는 활용 여지가 있어 감점을 약하게 적용합니다.",
+            )
+            return
+        }
+
+        addScore(
+            "중복 카드 감점",
+            -25,
+            "이미 덱에 있는 카드라 초보자 기준으로는 다른 역할을 보강하는 편이 안정적입니다.",
+        )
+
+        if (duplicateCount >= 2) {
+            addScore(
+                "다중 중복 감점",
+                -20,
+                "이미 2장 이상 보유한 카드라 추가로 집는 가치는 낮게 평가합니다.",
             )
         }
     }
@@ -509,7 +574,7 @@ object RecommendationEngine {
     ) {
         if (deckAnalysis.deckSize < 24 || isFinisher(candidate)) return
 
-        val hasMajorSynergy = candidate.allTags.any { it in getMajorSynergyTags(deckAnalysis) }
+        val hasMajorSynergy = candidate.effectiveTags().any { it in getMajorSynergyTags(deckAnalysis) }
         val isPremiumSynergyPick = candidate.beginnerTier.uppercase() in setOf("S", "A") && hasMajorSynergy
         if (isPremiumSynergyPick) return
 
@@ -540,14 +605,26 @@ object RecommendationEngine {
         val allDTier = candidates.all { it.isTier("D") }
         val hasMajorSynergyCandidate = candidates.any { it.hasMajorSynergy(deckAnalysis) }
         val hasMidDeckKeepTag = candidates.any {
-            it.allTags.toSet().hasAny("aoe", "draw", "energy", "power", "poison", "shiv")
+            it.effectiveTags().hasAny("aoe", "draw", "energy", "power", "poison", "shiv")
         }
         val hasLargeDeckKeepCard = candidates.any { it.isLateDeckKeepCard(deckAnalysis) }
         val generalAttackCandidates = candidates.filter { it.isGeneralAttackAfterQuota(deckAnalysis) }
+        val unmetFinisherCandidates = candidates.filter {
+            isFinisher(it) && !it.isFinisherReady(deckAnalysis)
+        }
+        val duplicateCandidates = candidates.filter { isDuplicateCard(deckAnalysis, it) }
+        val nonExemptDuplicateCandidates = duplicateCandidates.filterNot { isDuplicatePenaltyExemptCard(it) }
         val hasPremiumMajorSynergyCandidate = candidates.any {
             it.beginnerTier.uppercase() in setOf("S", "A") && it.hasMajorSynergy(deckAnalysis)
         }
         val allDTierAttacks = candidates.all { it.isTier("D") && isAttackRole(it) }
+
+        if (unmetFinisherCandidates.size == candidates.size) {
+            return listOf(
+                "피니셔 카드는 아직 관련 시너지가 부족해 지금 집기 어렵습니다.",
+                "현재 덱에는 피니셔를 활용할 만큼의 단도/교활 시너지가 충분하지 않습니다.",
+            )
+        }
 
         if (deckAnalysis.pickedAttackCount >= 3) {
             if (allDTierAttacks) {
@@ -575,6 +652,20 @@ object RecommendationEngine {
         }
 
         if (deckSize <= 18) return emptyList()
+
+        if (duplicateCandidates.size == candidates.size && nonExemptDuplicateCandidates.size == candidates.size) {
+            return listOf(
+                "후보 중 이미 덱에 있는 카드가 많아 이번 보상은 넘기는 편이 안정적입니다.",
+                "같은 카드를 더 넣기보다 덱의 핵심 카드 비율을 유지하는 편이 좋습니다.",
+            )
+        }
+
+        if (duplicateCandidates.size >= 2 && (deckSize >= 24 || highestScore < 35)) {
+            return listOf(
+                "후보 중 이미 덱에 있는 카드가 많아 이번 보상은 넘기는 편이 안정적입니다.",
+                "같은 카드를 더 넣기보다 덱의 핵심 카드 비율을 유지하는 편이 좋습니다.",
+            )
+        }
 
         if (allDTier && deckSize >= 18 && !hasMajorSynergyCandidate) {
             return listOf(
@@ -621,7 +712,7 @@ object RecommendationEngine {
         card: SilentCard,
         scoreReasons: List<String>,
     ): List<String> {
-        val tagReasons = card.allTags.toSet().cardTraitReasons()
+        val tagReasons = card.effectiveTags().cardTraitReasons()
         return (listOf(tierReason(card.beginnerTier)) + scoreReasons + tagReasons)
             .distinct()
             .take(4)
@@ -646,6 +737,15 @@ object RecommendationEngine {
     private fun getFinisherSynergyTag(card: SilentCard): String? =
         FINISHER_SYNERGY_TAGS[card.id]
 
+    private fun getDeckCardCount(deckAnalysis: DeckAnalysis, cardId: String): Int =
+        deckAnalysis.cardCounts.getOrDefault(cardId, 0)
+
+    private fun isDuplicateCard(deckAnalysis: DeckAnalysis, card: SilentCard): Boolean =
+        getDeckCardCount(deckAnalysis, card.id) >= 1
+
+    private fun isDuplicatePenaltyExemptCard(card: SilentCard): Boolean =
+        card.id in DUPLICATE_PENALTY_EXEMPT_CARD_IDS
+
     private fun countPickedAttackCards(deck: List<DeckCard>): Int =
         deck.sumOf { deckCard ->
             if (deckCard.card.id in STARTING_ATTACK_CARD_IDS) 0
@@ -664,15 +764,15 @@ object RecommendationEngine {
         deckAnalysis.majorSynergyTags
 
     private fun SilentCard.isLateDeckKeepCard(deckAnalysis: DeckAnalysis): Boolean {
-        val tags = allTags.toSet()
+        val tags = effectiveTags()
         return tags.hasAny("power", "draw", "energy") ||
-            isFinisher(this) ||
+            isFinisherReady(deckAnalysis) ||
             hasMajorSynergy(deckAnalysis) ||
             (beginnerTier.uppercase() in setOf("S", "A") && hasMajorSynergy(deckAnalysis))
     }
 
     private fun SilentCard.isGeneralAttackAfterQuota(deckAnalysis: DeckAnalysis): Boolean {
-        val tags = allTags.toSet()
+        val tags = effectiveTags()
         if (!isAttackRole(this)) return false
         if (isFinisher(this) || isEarlyDamagePower(this)) return false
         if (tags.hasAny("power", "draw", "energy")) return false
@@ -682,11 +782,25 @@ object RecommendationEngine {
         return true
     }
 
+    private fun SilentCard.isFinisherReady(deckAnalysis: DeckAnalysis): Boolean {
+        val synergyTag = getFinisherSynergyTag(this) ?: return false
+        return deckAnalysis.deckSize >= FINISHER_MIN_DECK_SIZE &&
+            deckAnalysis.tagCounts.countOf(synergyTag) >= FINISHER_REQUIRED_SYNERGY_COUNT
+    }
+
     private fun SilentCard.hasMajorSynergy(deckAnalysis: DeckAnalysis): Boolean =
-        allTags.any { it in getMajorSynergyTags(deckAnalysis) }
+        effectiveTags().any { it in getMajorSynergyTags(deckAnalysis) }
+
+    private fun SilentCard.effectiveTags(): Set<String> {
+        val tags = allTags.toMutableSet()
+        if (id == "FLICK_FLACK") {
+            tags.remove("aoe")
+        }
+        return tags
+    }
 
     private fun List<DeckCard>.countTaggedCards(tag: String): Int =
-        sumOf { deckCard -> if (tag in deckCard.card.allTags) deckCard.count else 0 }
+        sumOf { deckCard -> if (tag in deckCard.card.effectiveTags()) deckCard.count else 0 }
 
     private fun List<DeckCard>.countCardId(cardId: String): Int =
         sumOf { deckCard -> if (deckCard.card.id == cardId) deckCard.count else 0 }
@@ -727,9 +841,18 @@ object RecommendationEngine {
     private fun Map<String, Int>.countOf(tag: String): Int = getOrDefault(tag, 0)
 
     private fun Set<String>.hasAny(vararg tags: String): Boolean = tags.any { it in this }
+
+    private fun String.displaySynergyName(): String =
+        when (this) {
+            "shiv" -> "단도"
+            "sly" -> "교활"
+            else -> this
+        }
 }
 
 private const val REWARD_CANDIDATE_COUNT = 3
+private const val FINISHER_MIN_DECK_SIZE = 20
+private const val FINISHER_REQUIRED_SYNERGY_COUNT = 3
 
 private val STARTING_ATTACK_CARD_IDS = setOf(
     "STRIKE_SILENT",
@@ -754,6 +877,14 @@ private val EXTRA_ATTACK_ROLE_CARD_IDS = setOf(
 private val EARLY_DAMAGE_POWER_CARD_IDS = setOf(
     "NOXIOUS_FUMES",
     "INFINITE_BLADES",
+)
+
+private val DUPLICATE_PENALTY_EXEMPT_CARD_IDS = setOf(
+    "FOOTWORK",
+    "NOXIOUS_FUMES",
+    "ADRENALINE",
+    "BACKFLIP",
+    "ACROBATICS",
 )
 
 private val FINISHER_SYNERGY_TAGS = mapOf(
