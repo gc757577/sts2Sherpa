@@ -40,18 +40,22 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,6 +81,7 @@ import com.gchan.sts2_sherpa.logic.RecommendationAction
 import com.gchan.sts2_sherpa.logic.RecommendationResult
 import com.gchan.sts2_sherpa.util.KoreanInitialUtils
 import java.io.File
+import kotlinx.coroutines.launch
 
 private val DungeonTop = Color(0xFF05070B)
 private val DungeonMiddle = Color(0xFF101B18)
@@ -114,6 +119,9 @@ fun MainScreen(
     val context = LocalContext.current
     var pendingCameraImageUri by remember { mutableStateOf<Uri?>(null) }
     var isHelpDialogOpen by remember { mutableStateOf(false) }
+    var selectedScreen by remember { mutableStateOf(AppScreen.Recommender) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
     ) { isSuccess ->
@@ -147,15 +155,27 @@ fun MainScreen(
         onOcrMessageShown()
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(DungeonTop, DungeonMiddle, DungeonBottom),
-                ),
-            ),
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            AppDrawerContent(
+                selectedScreen = selectedScreen,
+                onScreenSelected = { screen ->
+                    selectedScreen = screen
+                    scope.launch { drawerState.close() }
+                },
+            )
+        },
     ) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(DungeonTop, DungeonMiddle, DungeonBottom),
+                    ),
+                ),
+        ) {
         when {
             uiState.isLoading -> LoadingContent(
                 modifier = Modifier.align(Alignment.Center),
@@ -169,35 +189,61 @@ fun MainScreen(
                     .padding(24.dp),
             )
 
-            else -> RewardSelectionContent(
-                uiState = uiState,
-                onRewardSlotClick = onRewardSlotClick,
-                onRewardCardClick = onRewardCardClick,
-                onDeckClick = onDeckClick,
-                onSkipClick = onSkipClick,
-                onHelpClick = { isHelpDialogOpen = true },
-                onCaptureCameraClick = {
-                    if (
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA,
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        runCatching { createCameraImageUri(context) }
-                            .onSuccess { imageUri ->
-                                pendingCameraImageUri = imageUri
-                                cameraLauncher.launch(imageUri)
-                            }
-                            .onFailure {
-                                Toast.makeText(context, "카메라를 실행하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                    } else {
-                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                },
-                modifier = Modifier.fillMaxSize(),
-            )
+            else -> when (selectedScreen) {
+                AppScreen.Recommender -> RewardSelectionContent(
+                    uiState = uiState,
+                    onRewardSlotClick = onRewardSlotClick,
+                    onRewardCardClick = onRewardCardClick,
+                    onDeckClick = onDeckClick,
+                    onSkipClick = onSkipClick,
+                    onCaptureCameraClick = {
+                        if (
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA,
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            runCatching { createCameraImageUri(context) }
+                                .onSuccess { imageUri ->
+                                    pendingCameraImageUri = imageUri
+                                    cameraLauncher.launch(imageUri)
+                                }
+                                .onFailure {
+                                    Toast.makeText(context, "카메라를 실행하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                AppScreen.Encyclopedia -> EncyclopediaScreen(
+                    cards = uiState.cards,
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                AppScreen.TierList -> TierListScreen(
+                    cards = uiState.cards,
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                AppScreen.DeckAnalysis -> DeckAnalysisScreen(
+                    deckCards = uiState.currentDeck,
+                    onDeckClick = onDeckClick,
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                AppScreen.Help -> HelpScreen(modifier = Modifier.fillMaxSize())
+            }
         }
+
+        MenuButton(
+            onClick = { scope.launch { drawerState.open() } },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+        )
 
         if (uiState.pickerSlotIndex != null) {
             CardPickerDialog(
@@ -240,6 +286,7 @@ fun MainScreen(
             )
         }
     }
+}
 }
 
 @Composable
@@ -306,7 +353,6 @@ private fun RewardSelectionContent(
     onRewardCardClick: (SilentCard) -> Unit,
     onDeckClick: () -> Unit,
     onSkipClick: () -> Unit,
-    onHelpClick: () -> Unit,
     onCaptureCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -318,11 +364,6 @@ private fun RewardSelectionContent(
     Box(
         modifier = modifier.padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
-        HelpButton(
-            onClick = onHelpClick,
-            modifier = Modifier.align(Alignment.TopStart),
-        )
-
         Row(
             modifier = Modifier.align(Alignment.TopEnd),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -506,7 +547,7 @@ private fun DeckCountBadge(
 }
 
 @Composable
-private fun HelpButton(
+private fun MenuButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -518,7 +559,7 @@ private fun HelpButton(
         tonalElevation = 4.dp,
     ) {
         Text(
-            text = "?",
+            text = "☰",
             modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
             style = MaterialTheme.typography.titleMedium,
             color = GoldLight,
