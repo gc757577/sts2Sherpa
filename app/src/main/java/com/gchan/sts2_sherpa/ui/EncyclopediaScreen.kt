@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,6 +16,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -73,9 +74,12 @@ fun EncyclopediaScreen(
         BrowseFilterRow(selectedFilter = filter, onFilterSelected = { filter = it })
 
         if (visibleCards.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text("검색 결과가 없습니다.", color = Color(0xFFBEB29A))
-            }
+            EmptyState(
+                icon = Icons.Filled.SearchOff,
+                title = "검색 결과가 없습니다",
+                description = "검색어나 필터를 바꿔 다시 찾아보세요.",
+                modifier = Modifier.fillMaxWidth(),
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(118.dp),

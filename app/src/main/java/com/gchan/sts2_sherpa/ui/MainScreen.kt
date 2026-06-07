@@ -7,16 +7,26 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +51,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
@@ -212,67 +227,73 @@ fun MainScreen(
                     .padding(24.dp),
             )
 
-            else -> when (selectedScreen) {
-                AppScreen.Recommender -> RewardSelectionContent(
-                    uiState = uiState,
-                    onRewardSlotClick = onRewardSlotClick,
-                    onRewardCardClick = onRewardCardClick,
-                    onDeckClick = onDeckClick,
-                    onSkipClick = onSkipClick,
-                    onCaptureCameraClick = {
-                        if (
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                Manifest.permission.CAMERA,
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            runCatching { createCameraImageUri(context) }
-                                .onSuccess { imageUri ->
-                                    pendingCameraImageUri = imageUri
-                                    cameraLauncher.launch(imageUri)
-                                }
-                                .onFailure {
-                                    Toast.makeText(context, "카메라를 실행하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                                }
-                        } else {
-                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                )
+            else -> Crossfade(
+                targetState = selectedScreen,
+                animationSpec = tween(durationMillis = 240),
+                label = "screen-crossfade",
+            ) { screen ->
+                when (screen) {
+                    AppScreen.Recommender -> RewardSelectionContent(
+                        uiState = uiState,
+                        onRewardSlotClick = onRewardSlotClick,
+                        onRewardCardClick = onRewardCardClick,
+                        onDeckClick = onDeckClick,
+                        onSkipClick = onSkipClick,
+                        onCaptureCameraClick = {
+                            if (
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.CAMERA,
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                runCatching { createCameraImageUri(context) }
+                                    .onSuccess { imageUri ->
+                                        pendingCameraImageUri = imageUri
+                                        cameraLauncher.launch(imageUri)
+                                    }
+                                    .onFailure {
+                                        Toast.makeText(context, "카메라를 실행하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else {
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                AppScreen.Encyclopedia -> EncyclopediaScreen(
-                    cards = uiState.cards,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                    AppScreen.Encyclopedia -> EncyclopediaScreen(
+                        cards = uiState.cards,
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                AppScreen.TierList -> TierListScreen(
-                    cards = uiState.cards,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                    AppScreen.TierList -> TierListScreen(
+                        cards = uiState.cards,
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                AppScreen.DeckAnalysis -> DeckAnalysisScreen(
-                    deckCards = uiState.labDeck,
-                    defaultBuildName = BuildAnalyzer.defaultPlayBuildName(BuildAnalyzer.labDirectionLabel(uiState.labDeck))
-                        .replace("플레이", "실험"),
-                    onAddCardClick = onOpenLabDeckAddCardPicker,
-                    onRemoveDeckCard = onRemoveLabDeckCard,
-                    onResetDeck = onResetLabDeck,
-                    onClearDeck = onClearLabDeck,
-                    onSaveBuild = onSaveLabDeckBuild,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                    AppScreen.DeckAnalysis -> DeckAnalysisScreen(
+                        deckCards = uiState.labDeck,
+                        defaultBuildName = BuildAnalyzer.defaultPlayBuildName(BuildAnalyzer.labDirectionLabel(uiState.labDeck))
+                            .replace("플레이", "실험"),
+                        onAddCardClick = onOpenLabDeckAddCardPicker,
+                        onRemoveDeckCard = onRemoveLabDeckCard,
+                        onResetDeck = onResetLabDeck,
+                        onClearDeck = onClearLabDeck,
+                        onSaveBuild = onSaveLabDeckBuild,
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                AppScreen.BuildCollection -> BuildCollectionScreen(
-                    savedBuilds = uiState.savedBuilds,
-                    allCards = uiState.cards,
-                    startingDeck = createStartingDeckForEditor(uiState.cards),
-                    onSaveBuild = onSaveCustomBuild,
-                    onDeleteBuild = onDeleteSavedBuild,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                    AppScreen.BuildCollection -> BuildCollectionScreen(
+                        savedBuilds = uiState.savedBuilds,
+                        allCards = uiState.cards,
+                        startingDeck = createStartingDeckForEditor(uiState.cards),
+                        onSaveBuild = onSaveCustomBuild,
+                        onDeleteBuild = onDeleteSavedBuild,
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                AppScreen.Help -> HelpScreen(modifier = Modifier.fillMaxSize())
+                    AppScreen.Help -> HelpScreen(modifier = Modifier.fillMaxSize())
+                }
             }
         }
 
@@ -470,7 +491,18 @@ private fun RewardSelectionContent(
                 }
             }
 
-            uiState.recommendationResult?.let { result ->
+            AnimatedVisibility(
+                visible = uiState.recommendationResult != null,
+                enter = fadeIn(animationSpec = tween(220)) + slideInVertically(
+                    animationSpec = tween(220),
+                    initialOffsetY = { it / 8 },
+                ),
+                exit = fadeOut(animationSpec = tween(180)) + slideOutVertically(
+                    animationSpec = tween(180),
+                    targetOffsetY = { it / 12 },
+                ),
+            ) {
+                val result = uiState.recommendationResult ?: return@AnimatedVisibility
                 RecommendationPanel(
                     result = result,
                     modifier = Modifier.fillMaxWidth(),
@@ -550,6 +582,11 @@ private fun SkipButton(
         ),
         shape = RoundedCornerShape(10.dp),
     ) {
+        Icon(
+            imageVector = Icons.Filled.SkipNext,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 6.dp),
+        )
         Text(
             text = if (isSkipRecommended) "✨ 스킵 추천" else "스킵",
             modifier = Modifier.padding(vertical = 5.dp),
@@ -578,6 +615,11 @@ private fun RecognitionButton(
         ),
         shape = RoundedCornerShape(10.dp),
     ) {
+        Icon(
+            imageVector = Icons.Filled.CameraAlt,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 6.dp),
+        )
         Text(
             text = text,
             modifier = Modifier.padding(vertical = 5.dp),
@@ -615,21 +657,12 @@ private fun MenuButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(999.dp),
-        color = PanelDark,
-        border = BorderStroke(1.dp, Gold),
-        tonalElevation = 4.dp,
-    ) {
-        Text(
-            text = "☰",
-            modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.titleMedium,
-            color = GoldLight,
-            fontWeight = FontWeight.Bold,
-        )
-    }
+    IconCircleButton(
+        icon = Icons.Filled.Menu,
+        contentDescription = "메뉴",
+        onClick = onClick,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -640,6 +673,11 @@ private fun RewardCardSlot(
     onCardClick: (SilentCard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val borderWidth by animateDpAsState(
+        targetValue = if (isRecommended) 3.dp else 1.dp,
+        animationSpec = tween(durationMillis = 180),
+        label = "reward-card-border",
+    )
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -665,7 +703,7 @@ private fun RewardCardSlot(
                     .fillMaxWidth()
                     .clickable { onCardClick(card) },
                 border = BorderStroke(
-                    width = if (isRecommended) 3.dp else 1.dp,
+                    width = borderWidth,
                     color = if (isRecommended) RecommendGlow else Gold,
                 ),
                 shape = RoundedCornerShape(8.dp),
@@ -1437,6 +1475,18 @@ fun DeckAddCardTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isPressed) Color(0x995B4521) else Color(0x6617140F),
+        animationSpec = tween(durationMillis = 120),
+        label = "add-card-tile-background",
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (isPressed) GoldLight else Gold,
+        animationSpec = tween(durationMillis = 120),
+        label = "add-card-tile-border",
+    )
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1447,15 +1497,19 @@ fun DeckAddCardTile(
                 .fillMaxWidth()
                 .aspectRatio(0.72f)
                 .background(
-                    color = Color(0x6617140F),
+                    color = backgroundColor,
                     shape = RoundedCornerShape(8.dp),
                 )
                 .border(
                     width = 1.dp,
-                    color = Gold,
+                    color = borderColor,
                     shape = RoundedCornerShape(8.dp),
                 )
-                .clickable(onClick = onClick),
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = onClick,
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Text(

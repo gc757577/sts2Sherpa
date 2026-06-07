@@ -16,13 +16,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -218,41 +220,33 @@ private fun LabActionButtons(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
+            PrimaryActionButton(
+                text = "카드 추가",
                 onClick = onAddCardClick,
                 modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFD6B15E),
-                    contentColor = Color(0xFF17140F),
-                ),
-            ) {
-                Text("카드 추가", fontWeight = FontWeight.Bold)
-            }
-            Button(
+                icon = Icons.Filled.Add,
+            )
+            PrimaryActionButton(
+                text = "저장",
                 onClick = onSaveClick,
                 modifier = Modifier.weight(1f),
                 enabled = canSave,
-            ) {
-                Text("저장")
-            }
+                icon = Icons.Filled.Save,
+            )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(
+            SecondaryActionButton(
+                text = "시작 덱",
                 onClick = onResetDeck,
                 modifier = Modifier.weight(1f),
-                border = BorderStroke(1.dp, Color(0xFFD6B15E)),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFE0A0)),
-            ) {
-                Text("시작 덱")
-            }
-            OutlinedButton(
+                icon = Icons.Filled.RestartAlt,
+            )
+            DangerActionButton(
+                text = "빈 덱",
                 onClick = onClearDeck,
                 modifier = Modifier.weight(1f),
-                border = BorderStroke(1.dp, Color(0xFFB36A4A)),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFFC0A8)),
-            ) {
-                Text("빈 덱")
-            }
+                icon = Icons.Filled.DeleteSweep,
+            )
         }
     }
 }
@@ -281,6 +275,10 @@ private fun CompactRoleCard(
     stat: RoleProgress,
     modifier: Modifier = Modifier,
 ) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = stat.progress,
+        label = "role-progress-${stat.label}",
+    )
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -308,7 +306,7 @@ private fun CompactRoleCard(
                 )
             }
             LinearProgressIndicator(
-                progress = { stat.progress },
+                progress = { animatedProgress },
                 modifier = Modifier.fillMaxWidth(),
                 color = Color(0xFFD6B15E),
                 trackColor = Color(0xFF292319),

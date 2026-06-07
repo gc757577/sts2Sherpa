@@ -17,6 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -76,27 +79,24 @@ fun BuildCollectionScreen(
             )
         }
         item {
-            Button(
+            PrimaryActionButton(
+                text = "새 빌드 만들기",
                 onClick = { isEditorOpen = true },
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text("새 빌드 만들기")
-            }
+                icon = Icons.Filled.Add,
+            )
         }
 
         if (savedBuilds.isEmpty()) {
             item {
-                Box(
+                EmptyState(
+                    icon = Icons.Filled.CollectionsBookmark,
+                    title = "저장된 빌드가 없습니다",
+                    description = "덱 실험실에서 빌드를 저장하거나 새 빌드를 만들어보세요.",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 48.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "저장된 빌드가 없습니다.",
-                        color = Color(0xFFBEB29A),
-                    )
-                }
+                        .padding(top = 36.dp),
+                )
             }
         } else {
             items(savedBuilds, key = { it.id }) { build ->

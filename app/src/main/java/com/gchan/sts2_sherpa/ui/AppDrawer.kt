@@ -4,6 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.CollectionsBookmark
+import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.Science
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
@@ -50,6 +58,13 @@ fun AppDrawerContent(
             )
             AppScreen.entries.forEach { screen ->
                 NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = screen.icon,
+                            contentDescription = null,
+                            tint = if (screen == selectedScreen) Color(0xFFFFE0A0) else Color(0xFFBEB29A),
+                        )
+                    },
                     label = {
                         Text(
                             text = screen.title,
@@ -64,3 +79,13 @@ fun AppDrawerContent(
         }
     }
 }
+
+private val AppScreen.icon
+    get() = when (this) {
+        AppScreen.Recommender -> Icons.Filled.AutoAwesome
+        AppScreen.Encyclopedia -> Icons.AutoMirrored.Filled.MenuBook
+        AppScreen.TierList -> Icons.Filled.Leaderboard
+        AppScreen.DeckAnalysis -> Icons.Filled.Science
+        AppScreen.BuildCollection -> Icons.Filled.CollectionsBookmark
+        AppScreen.Help -> Icons.AutoMirrored.Filled.HelpOutline
+    }
