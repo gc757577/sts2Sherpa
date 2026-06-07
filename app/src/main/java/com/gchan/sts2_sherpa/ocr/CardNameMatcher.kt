@@ -14,6 +14,7 @@ class CardNameMatcher {
         val normalizedText = ocrText.normalizeForCardMatch()
         if (normalizedText.isBlank()) return emptyList()
 
+        val normalizedFragments = ocrText.normalizedMatchFragments()
         val exactMatches = cards.mapNotNull { card ->
             val bestName = card.matchNames().firstOrNull { normalizedName ->
                 normalizedName.isNotBlank() && normalizedText.contains(normalizedName)
@@ -24,13 +25,20 @@ class CardNameMatcher {
                 score = EXACT_MATCH_SCORE + bestName.length,
                 similarity = 1.0,
                 source = "exact",
+                isUpgraded = ocrText.hasUpgradeMarkerNear(card),
             )
         }
 
         val fuzzyMatches = if (exactMatches.size < maxResults) {
             cards
                 .filterNot { card -> exactMatches.any { it.card.id == card.id } }
-                .mapNotNull { card -> findBestFuzzyMatch(card, normalizedText) }
+                .mapNotNull { card ->
+                    findBestFuzzyMatch(
+                        card = card,
+                        normalizedFragments = normalizedFragments,
+                        isUpgraded = ocrText.hasUpgradeMarkerNear(card),
+                    )
+                }
         } else {
             emptyList()
         }
@@ -45,8 +53,12 @@ class CardNameMatcher {
                         TAG,
                         "Matched card=${match.card.id}, name=${match.card.displayName()}, " +
                             "score=${"%.3f".format(match.score)}, " +
-                            "similarity=${"%.3f".format(match.similarity)}, source=${match.source}",
+                            "similarity=${"%.3f".format(match.similarity)}, " +
+                            "source=${match.source}, upgradedDetected=${match.isUpgraded}",
                     )
+                    if (match.isUpgraded) {
+                        Log.d(TAG, "upgraded detected for card=${match.card.id}, name=${match.card.displayName()}")
+                    }
                 }
             }
             .map { it.card }
@@ -54,7 +66,8 @@ class CardNameMatcher {
 
     private fun findBestFuzzyMatch(
         card: SilentCard,
-        normalizedText: String,
+        normalizedFragments: List<String>,
+        isUpgraded: Boolean,
     ): CardMatch? {
         return card.matchNames()
             .filter { it.isNotBlank() }
@@ -65,10 +78,12 @@ class CardNameMatcher {
                     SIMILARITY_THRESHOLD
                 }
 
-                val similarity = findBestSimilarity(
-                    normalizedName = normalizedName,
-                    normalizedText = normalizedText,
-                )
+                val similarity = normalizedFragments.maxOfOrNull { normalizedText ->
+                    findBestSimilarity(
+                        normalizedName = normalizedName,
+                        normalizedText = normalizedText,
+                    )
+                } ?: 0.0
 
                 if (similarity >= threshold) {
                     CardMatch(
@@ -76,6 +91,7 @@ class CardNameMatcher {
                         score = similarity + normalizedName.length / NAME_LENGTH_SCORE_DIVISOR,
                         similarity = similarity,
                         source = "fuzzy",
+                        isUpgraded = isUpgraded,
                     )
                 } else {
                     null
@@ -120,8 +136,40 @@ class CardNameMatcher {
             .distinct()
 
     private fun String.normalizeForCardMatch(): String =
-        replace(Regex("""\s+"""), "")
-            .replace(Regex("""[^가-힣ㄱ-ㅎㅏ-ㅣA-Za-z0-9]"""), "")
+        replace(UPGRADE_MARK_REGEX, "")
+            .replace(Regex("""\s+"""), "")
+            .replace(Regex("""[^가-힣A-Za-z0-9]"""), "")
+            .lowercase()
+
+    private fun String.normalizedMatchFragments(): List<String> =
+        (lineSequence().map { it.normalizeForCardMatch() } + sequenceOf(normalizeForCardMatch()))
+            .filter { it.isNotBlank() }
+            .distinct()
+            .toList()
+
+    private fun String.hasUpgradeMarkerNear(card: SilentCard): Boolean {
+        val matchNames = card.matchNames()
+        if (matchNames.isEmpty()) return false
+
+        return lineSequence().any { rawLine ->
+            val line = rawLine.normalizeForUpgradeScan()
+            matchNames.any { normalizedName ->
+                val index = line.indexOf(normalizedName)
+                if (index < 0) {
+                    false
+                } else {
+                    val from = max(0, index - UPGRADE_MARK_SCAN_PADDING)
+                    val to = min(line.length, index + normalizedName.length + UPGRADE_MARK_SCAN_PADDING)
+                    line.substring(from, to).contains("+")
+                }
+            }
+        }
+    }
+
+    private fun String.normalizeForUpgradeScan(): String =
+        replace(Regex("""[＋﹢]"""), "+")
+            .replace(Regex("""\s+"""), "")
+            .replace(Regex("""[^가-힣A-Za-z0-9+]"""), "")
             .lowercase()
 
     private fun String.similarityTo(other: String): Double {
@@ -165,6 +213,7 @@ class CardNameMatcher {
         val score: Double,
         val similarity: Double,
         val source: String,
+        val isUpgraded: Boolean,
     )
 
     private companion object {
@@ -175,5 +224,7 @@ class CardNameMatcher {
         const val SHORT_NAME_MAX_LENGTH = 2
         const val WINDOW_LENGTH_TOLERANCE = 2
         const val NAME_LENGTH_SCORE_DIVISOR = 100.0
+        const val UPGRADE_MARK_SCAN_PADDING = 2
+        val UPGRADE_MARK_REGEX = Regex("""[\+＋﹢]""")
     }
 }
