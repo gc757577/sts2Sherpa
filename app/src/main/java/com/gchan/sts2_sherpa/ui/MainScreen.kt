@@ -3,18 +3,16 @@ package com.gchan.sts2_sherpa.ui
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,12 +22,14 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,6 +37,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,11 +53,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,9 +65,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.gchan.sts2_sherpa.data.DeckCard
 import com.gchan.sts2_sherpa.data.SilentCard
+import com.gchan.sts2_sherpa.logic.CandidateScore
+import com.gchan.sts2_sherpa.logic.DeckAnalysis
+import com.gchan.sts2_sherpa.logic.RecommendationAction
 import com.gchan.sts2_sherpa.logic.RecommendationResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.gchan.sts2_sherpa.util.KoreanInitialUtils
 import java.io.File
 
 private val DungeonTop = Color(0xFF05070B)
@@ -93,6 +93,8 @@ fun MainScreen(
     onDeckClick: () -> Unit,
     onDismissDeck: () -> Unit,
     onSkipClick: () -> Unit,
+    onRemoveDeckCard: (String) -> Unit,
+    onResetDeck: () -> Unit,
     onImageSelected: (Uri) -> Unit,
     onOcrMessageShown: () -> Unit,
     onOcrResultSlotClick: (Int) -> Unit,
@@ -100,13 +102,11 @@ fun MainScreen(
     onDismissOcrResultCardPicker: () -> Unit,
     onConfirmOcrResult: () -> Unit,
     onCancelOcrResult: () -> Unit,
+    onRetryLoad: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     var pendingCameraImageUri by remember { mutableStateOf<Uri?>(null) }
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-    ) { uri -> uri?.let(onImageSelected) }
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
     ) { isSuccess ->
@@ -121,9 +121,14 @@ fun MainScreen(
         contract = ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
         if (isGranted) {
-            val imageUri = createCameraImageUri(context)
-            pendingCameraImageUri = imageUri
-            cameraLauncher.launch(imageUri)
+            runCatching { createCameraImageUri(context) }
+                .onSuccess { imageUri ->
+                    pendingCameraImageUri = imageUri
+                    cameraLauncher.launch(imageUri)
+                }
+                .onFailure {
+                    Toast.makeText(context, "카메라를 실행하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                }
         } else {
             Toast.makeText(context, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
@@ -145,17 +150,16 @@ fun MainScreen(
             ),
     ) {
         when {
-            uiState.isLoading -> CircularProgressIndicator(
+            uiState.isLoading -> LoadingContent(
                 modifier = Modifier.align(Alignment.Center),
-                color = Gold,
             )
 
-            uiState.errorMessage != null -> Text(
-                text = uiState.errorMessage,
+            uiState.errorMessage != null -> ErrorContent(
+                message = uiState.errorMessage,
+                onRetryClick = onRetryLoad,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(24.dp),
-                color = Color(0xFFFFB4AB),
             )
 
             else -> RewardSelectionContent(
@@ -164,11 +168,6 @@ fun MainScreen(
                 onRewardCardClick = onRewardCardClick,
                 onDeckClick = onDeckClick,
                 onSkipClick = onSkipClick,
-                onRecognizeImageClick = {
-                    imagePickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                    )
-                },
                 onCaptureCameraClick = {
                     if (
                         ContextCompat.checkSelfPermission(
@@ -176,9 +175,14 @@ fun MainScreen(
                             Manifest.permission.CAMERA,
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        val imageUri = createCameraImageUri(context)
-                        pendingCameraImageUri = imageUri
-                        cameraLauncher.launch(imageUri)
+                        runCatching { createCameraImageUri(context) }
+                            .onSuccess { imageUri ->
+                                pendingCameraImageUri = imageUri
+                                cameraLauncher.launch(imageUri)
+                            }
+                            .onFailure {
+                                Toast.makeText(context, "카메라를 실행하는 중 문제가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                            }
                     } else {
                         cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }
@@ -217,7 +221,66 @@ fun MainScreen(
             DeckDialog(
                 deckCards = uiState.currentDeck,
                 onDismissRequest = onDismissDeck,
+                onRemoveDeckCard = onRemoveDeckCard,
+                onResetDeck = onResetDeck,
             )
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        CircularProgressIndicator(color = Gold)
+        Text(
+            text = "카드 데이터를 불러오는 중...",
+            style = MaterialTheme.typography.bodyMedium,
+            color = BoneText,
+        )
+    }
+}
+
+@Composable
+private fun ErrorContent(
+    message: String,
+    onRetryClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = PanelDark,
+        border = BorderStroke(1.dp, Color(0xFFFFB4AB)),
+        tonalElevation = 6.dp,
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = message.ifBlank { "카드 데이터를 불러오지 못했습니다." },
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFFFDAD6),
+                textAlign = TextAlign.Center,
+            )
+            OutlinedButton(
+                onClick = onRetryClick,
+                border = BorderStroke(1.dp, Gold),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color(0xCC0B1015),
+                    contentColor = GoldLight,
+                ),
+                shape = RoundedCornerShape(10.dp),
+            ) {
+                Text(text = "재시도")
+            }
         }
     }
 }
@@ -229,16 +292,22 @@ private fun RewardSelectionContent(
     onRewardCardClick: (SilentCard) -> Unit,
     onDeckClick: () -> Unit,
     onSkipClick: () -> Unit,
-    onRecognizeImageClick: () -> Unit,
     onCaptureCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val recommendedCardId = uiState.recommendationResult?.recommendedCard?.id
+    val recommendedCardId = uiState.recommendationResult
+        ?.takeIf { it.action == RecommendationAction.PICK_CARD }
+        ?.recommendedCard
+        ?.id
 
     Box(
         modifier = modifier.padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
-        Box(modifier = Modifier.align(Alignment.TopEnd)) {
+        Row(
+            modifier = Modifier.align(Alignment.TopEnd),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             DeckCountBadge(
                 deckCardCount = uiState.deckCardCount,
                 onClick = onDeckClick,
@@ -252,6 +321,14 @@ private fun RewardSelectionContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
+            Text(
+                text = "3장의 보상 카드를 선택하거나 카메라로 인식해 추천을 받아보세요.",
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = BoneText,
+                textAlign = TextAlign.Center,
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -278,7 +355,6 @@ private fun RewardSelectionContent(
 
         BottomActionButtons(
             onSkipClick = onSkipClick,
-            onRecognizeImageClick = onRecognizeImageClick,
             onCaptureCameraClick = onCaptureCameraClick,
             isRecognizing = uiState.isRecognizing,
             modifier = Modifier
@@ -291,7 +367,6 @@ private fun RewardSelectionContent(
 @Composable
 private fun BottomActionButtons(
     onSkipClick: () -> Unit,
-    onRecognizeImageClick: () -> Unit,
     onCaptureCameraClick: () -> Unit,
     isRecognizing: Boolean,
     modifier: Modifier = Modifier,
@@ -300,23 +375,12 @@ private fun BottomActionButtons(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(
+        RecognitionButton(
+            text = if (isRecognizing) "인식 중..." else "카메라로 카드 인식",
+            enabled = !isRecognizing,
+            onClick = onCaptureCameraClick,
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            RecognitionButton(
-                text = if (isRecognizing) "인식 중..." else "사진에서 인식",
-                enabled = !isRecognizing,
-                onClick = onRecognizeImageClick,
-                modifier = Modifier.weight(1f),
-            )
-            RecognitionButton(
-                text = if (isRecognizing) "인식 중..." else "카메라로 촬영",
-                enabled = !isRecognizing,
-                onClick = onCaptureCameraClick,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        )
 
         OutlinedButton(
             onClick = onSkipClick,
@@ -499,6 +563,10 @@ private fun RecommendationPanel(
     result: RecommendationResult,
     modifier: Modifier = Modifier,
 ) {
+    val isSkipRecommended = result.action == RecommendationAction.SKIP
+    val recommendedCardId = result.recommendedCard?.id
+    var isScoreDetailVisible by remember { mutableStateOf(false) }
+
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
@@ -507,57 +575,234 @@ private fun RecommendationPanel(
         tonalElevation = 8.dp,
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .heightIn(max = 340.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                text = "✨ 추천 결과 ✨",
+                text = if (isSkipRecommended) "스킵 추천" else "✨ 추천 결과 ✨",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFD9ECFF),
             )
-            Text(
-                text = "추천 카드: ${result.recommendedCard.displayName()}",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White,
-            )
-            Text(
-                text = "점수: ${result.recommendedScore.score}점",
-                style = MaterialTheme.typography.bodyMedium,
-                color = BoneText,
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            if (isSkipRecommended) {
                 Text(
-                    text = "추천 이유:",
+                    text = "이번 보상은 넘기는 편이 좋습니다.",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                 )
-                result.recommendedScore.reasons.forEach { reason ->
+                Text(
+                    text = "그래도 원하면 후보 카드를 선택해 덱에 추가할 수 있습니다.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MutedText,
+                )
+            } else {
+                Text(
+                    text = "추천 카드: ${result.recommendedCard?.displayName().orEmpty()}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                )
+                Text(
+                    text = "점수: ${result.recommendedScore?.score ?: 0}점",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = BoneText,
+                )
+            }
+
+            DeckAnalysisSection(deckAnalysis = result.deckAnalysis)
+            ReasonSection(
+                title = if (isSkipRecommended) "스킵 이유:" else "추천 이유:",
+                reasons = result.reasons,
+            )
+            CandidateScoreSection(
+                candidateScores = result.candidateScores,
+                recommendedCardId = if (isSkipRecommended) null else recommendedCardId,
+            )
+
+            result.recommendedScore?.let { recommendedScore ->
+                TextButton(
+                    onClick = { isScoreDetailVisible = !isScoreDetailVisible },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Text(
-                        text = "- $reason",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFE6EEF5),
+                        text = if (isScoreDetailVisible) "점수 상세 접기" else "점수 상세 보기",
+                        color = GoldLight,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = "후보 점수:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                )
-                result.candidateScores.forEach { candidateScore ->
-                    Text(
-                        text = "- ${candidateScore.card.displayName()}: ${candidateScore.score}점",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFE6EEF5),
-                    )
+                if (isScoreDetailVisible) {
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        recommendedScore.scoreBreakdown.forEach { breakdown ->
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = Color(0x6621262D),
+                                        shape = RoundedCornerShape(8.dp),
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color(0x334D6B82),
+                                        shape = RoundedCornerShape(8.dp),
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(2.dp),
+                            ) {
+                                Text(
+                                    text = "${breakdown.label}: ${breakdown.score.signedScore()}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = BoneText,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    text = breakdown.reason,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFFE6EEF5),
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DeckAnalysisSection(deckAnalysis: DeckAnalysis) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = Color(0x6621262D),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .border(
+                width = 1.dp,
+                color = Color(0x334D6B82),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = "현재 덱 분석",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+        )
+        Text(
+            text = "카드 수: ${deckAnalysis.deckSize}장",
+            style = MaterialTheme.typography.bodySmall,
+            color = BoneText,
+        )
+        Text(
+            text = "주요 태그: ${deckAnalysis.topTagSummary()}",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFFE6EEF5),
+        )
+        Text(
+            text = "부족한 역할: ${deckAnalysis.missingRoles.joinToString(", ")}",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFFE6EEF5),
+        )
+    }
+}
+
+@Composable
+private fun ReasonSection(
+    title: String,
+    reasons: List<String>,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+        )
+        reasons.forEach { reason ->
+            Text(
+                text = "- $reason",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFFE6EEF5),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CandidateScoreSection(
+    candidateScores: List<CandidateScore>,
+    recommendedCardId: String?,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            text = "후보 점수 비교",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+        )
+        candidateScores.forEach { candidateScore ->
+            CandidateScoreRow(
+                candidateScore = candidateScore,
+                isRecommended = candidateScore.card.id == recommendedCardId,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CandidateScoreRow(
+    candidateScore: CandidateScore,
+    isRecommended: Boolean,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = if (isRecommended) Color(0x55385F8E) else Color(0x55171510),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .border(
+                width = 1.dp,
+                color = if (isRecommended) RecommendGlow else Color(0x3351452F),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(horizontal = 10.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = candidateScore.card.displayName(),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (isRecommended) Color(0xFFD9ECFF) else BoneText,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = "티어 ${candidateScore.card.beginnerTier.ifBlank { "-" }} · ${candidateScore.card.previewTags()}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MutedText,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Text(
+            text = "${candidateScore.score}점",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (isRecommended) Color(0xFFD9ECFF) else Color(0xFFE6EEF5),
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -567,23 +812,36 @@ private fun CardPickerDialog(
     onCardPicked: (SilentCard) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedFilter by remember { mutableStateOf(CardPickerFilter.All) }
+    var sortMode by remember { mutableStateOf(CardSortMode.Tier) }
+    val visibleCards = remember(cards, searchQuery, selectedFilter, sortMode) {
+        cards
+            .asSequence()
+            .filter { selectedFilter.matches(it) }
+            .filter { it.matchesCardSearch(searchQuery) }
+            .sortedWith(sortMode.comparator)
+            .toList()
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.88f),
             shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surface,
+            color = PanelDark,
+            border = BorderStroke(2.dp, Gold),
             tonalElevation = 6.dp,
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -591,29 +849,141 @@ private fun CardPickerDialog(
                         text = "카드 선택",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
+                        color = Gold,
                     )
-                    Button(onClick = onDismissRequest) {
-                        Text(text = "닫기")
+                    TextButton(onClick = onDismissRequest) {
+                        Text(
+                            text = "X",
+                            color = GoldLight,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
                 }
 
-                CardGrid(
-                    cards = cards,
-                    onCardClick = onCardPicked,
-                    modifier = Modifier.fillMaxSize(),
-                    minCellSize = 128.dp,
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("카드 이름 또는 초성 검색") },
+                    singleLine = true,
                 )
+
+                CardPickerFilterTabs(
+                    selectedFilter = selectedFilter,
+                    onFilterSelected = { selectedFilter = it },
+                )
+
+                CardSortTabs(
+                    selectedSortMode = sortMode,
+                    onSortSelected = { sortMode = it },
+                )
+
+                if (visibleCards.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "검색 결과가 없습니다",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MutedText,
+                        )
+                    }
+                } else {
+                    CardGrid(
+                        cards = visibleCards,
+                        onCardClick = onCardPicked,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        minCellSize = 118.dp,
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
+private fun CardPickerFilterTabs(
+    selectedFilter: CardPickerFilter,
+    onFilterSelected: (CardPickerFilter) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        CardPickerFilter.entries.forEach { filter ->
+            SelectablePickerChip(
+                text = filter.label,
+                isSelected = filter == selectedFilter,
+                onClick = { onFilterSelected(filter) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun CardSortTabs(
+    selectedSortMode: CardSortMode,
+    onSortSelected: (CardSortMode) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        CardSortMode.entries.forEach { sortMode ->
+            SelectablePickerChip(
+                text = sortMode.label,
+                isSelected = sortMode == selectedSortMode,
+                onClick = { onSortSelected(sortMode) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SelectablePickerChip(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .background(
+                color = if (isSelected) Color(0xFF5B4521) else Color(0xFF292319),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .border(
+                width = 1.dp,
+                color = if (isSelected) Gold else Color(0xFF51452F),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 7.dp),
+        color = if (isSelected) GoldLight else MutedText,
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+        maxLines = 1,
+    )
+}
+
+@Composable
 private fun DeckDialog(
     deckCards: List<DeckCard>,
     onDismissRequest: () -> Unit,
+    onRemoveDeckCard: (String) -> Unit,
+    onResetDeck: () -> Unit,
 ) {
     var selectedFilter by remember { mutableStateOf(DeckFilter.All) }
+    var isResetConfirmOpen by remember { mutableStateOf(false) }
     val totalCardCount = deckCards.sumOf { it.count }
     val filteredDeckCards = deckCards.filter { selectedFilter.matches(it.card) }
     val selectedTabColor = Color(0xFF5B4521)
@@ -702,7 +1072,11 @@ private fun DeckDialog(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = "표시할 카드가 없습니다.",
+                            text = if (deckCards.isEmpty()) {
+                                "현재 덱이 비어 있습니다."
+                            } else {
+                                "표시할 카드가 없습니다."
+                            },
                             color = MutedText,
                             style = MaterialTheme.typography.bodyMedium,
                         )
@@ -718,25 +1092,84 @@ private fun DeckDialog(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         items(filteredDeckCards, key = { it.card.id }) { deckCard ->
-                            DeckPoolCardItem(deckCard = deckCard)
+                            DeckPoolCardItem(
+                                deckCard = deckCard,
+                                onRemoveClick = { onRemoveDeckCard(deckCard.card.id) },
+                            )
                         }
                     }
                 }
 
-                Button(
-                    onClick = onDismissRequest,
+                Row(
                     modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Text(text = "닫기")
+                    OutlinedButton(
+                        onClick = { isResetConfirmOpen = true },
+                        modifier = Modifier.weight(1f),
+                        border = BorderStroke(1.dp, Color(0xFFB36A4A)),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xAA1D1110),
+                            contentColor = Color(0xFFFFC0A8),
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text(text = "초기화")
+                    }
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text(text = "닫기")
+                    }
                 }
             }
         }
+    }
+
+    if (isResetConfirmOpen) {
+        AlertDialog(
+            onDismissRequest = { isResetConfirmOpen = false },
+            containerColor = PanelDark,
+            titleContentColor = Gold,
+            textContentColor = Color(0xFFE6EEF5),
+            title = {
+                Text(
+                    text = "덱 초기화",
+                    fontWeight = FontWeight.SemiBold,
+                )
+            },
+            text = {
+                Text(text = "현재 덱을 사일런트 시작 덱으로 되돌릴까요?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onResetDeck()
+                        isResetConfirmOpen = false
+                    },
+                ) {
+                    Text(
+                        text = "초기화",
+                        color = Color(0xFFFFC0A8),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isResetConfirmOpen = false }) {
+                    Text(text = "취소", color = MutedText)
+                }
+            },
+        )
     }
 }
 
 @Composable
 private fun DeckPoolCardItem(
     deckCard: DeckCard,
+    onRemoveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -754,11 +1187,36 @@ private fun DeckPoolCardItem(
                 contentDescription = deckCard.card.displayName(),
                 modifier = Modifier.fillMaxSize(),
             )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(3.dp)
+                    .background(
+                        color = Color(0xDD05070B),
+                        shape = RoundedCornerShape(999.dp),
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xAAFFFFFF),
+                        shape = RoundedCornerShape(999.dp),
+                    )
+                    .clickable(onClick = onRemoveClick)
+                    .padding(horizontal = 7.dp, vertical = 2.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "×",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
             if (deckCard.count > 1) {
                 Text(
                     text = "x${deckCard.count}",
                     modifier = Modifier
                         .align(Alignment.TopEnd)
+                        .padding(3.dp)
                         .background(
                             color = Color(0xDD21180D),
                             shape = RoundedCornerShape(8.dp),
@@ -806,6 +1264,52 @@ private enum class DeckFilter(val label: String) {
         }
 }
 
+private enum class CardPickerFilter(val label: String) {
+    All("전체"),
+    Attack("공격"),
+    Skill("스킬"),
+    Power("파워"),
+    Block("방어"),
+    Poison("중독"),
+    Shiv("단도"),
+    Draw("드로우"),
+    Aoe("광역");
+
+    fun matches(card: SilentCard): Boolean =
+        when (this) {
+            All -> true
+            Attack -> card.type == "Attack"
+            Skill -> card.type == "Skill"
+            Power -> card.type == "Power"
+            Block -> "block" in card.allTags
+            Poison -> "poison" in card.allTags
+            Shiv -> "shiv" in card.allTags
+            Draw -> "draw" in card.allTags
+            Aoe -> "aoe" in card.allTags
+        }
+}
+
+private enum class CardSortMode(
+    val label: String,
+    val comparator: Comparator<SilentCard>,
+) {
+    Tier(
+        label = "티어순",
+        comparator = compareBy<SilentCard> { it.beginnerTier.tierRank() }
+            .thenBy { it.displayName() },
+    ),
+    Name(
+        label = "이름순",
+        comparator = compareBy { it.displayName() },
+    ),
+    Cost(
+        label = "비용순",
+        comparator = compareBy<SilentCard> { it.cost ?: Int.MAX_VALUE }
+            .thenBy { it.beginnerTier.tierRank() }
+            .thenBy { it.displayName() },
+    );
+}
+
 @Composable
 private fun CardGrid(
     cards: List<SilentCard>,
@@ -839,38 +1343,62 @@ private fun SilentCardItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, Color(0xFF51452F)),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = CardDark,
         ),
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(7.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            AssetCardImage(
-                path = card.image,
-                contentDescription = card.displayName(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.72f),
-            )
+            Box {
+                AssetCardImage(
+                    path = card.image,
+                    contentDescription = card.displayName(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(0.72f),
+                )
+                Text(
+                    text = card.beginnerTier.ifBlank { "?" },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = Color(0xDD21180D),
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = Gold,
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .padding(horizontal = 7.dp, vertical = 2.dp),
+                    color = GoldLight,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
             Text(
                 text = card.displayName(),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.SemiBold,
+                color = BoneText,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "Cost ${card.cost ?: "-"} / ${card.type.ifBlank { "Unknown" }}",
+                text = "비용 ${card.cost?.toString() ?: "-"} · ${card.typeLabel()}",
                 style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFFE6EEF5),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "Tier ${card.beginnerTier.ifBlank { "-" }} / ${card.rarity.ifBlank { "Unknown" }}",
+                text = "티어 ${card.beginnerTier.ifBlank { "-" }} · ${card.rarityKo.ifBlank { card.rarity.ifBlank { "-" } }}",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MutedText,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -884,39 +1412,60 @@ private fun AssetCardImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val imageBitmap by produceState<ImageBitmap?>(initialValue = null, path) {
-        value = withContext(Dispatchers.IO) {
-            runCatching {
-                context.assets.open(path).use { inputStream ->
-                    BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
-                }
-            }.getOrNull()
-        }
-    }
-
-    Box(
+    CardAssetImage(
+        path = path,
+        contentDescription = contentDescription,
+        fallbackText = contentDescription,
         modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        if (imageBitmap != null) {
-            Image(
-                bitmap = imageBitmap!!,
-                contentDescription = contentDescription,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-            )
-        } else {
-            Text(
-                text = "No image",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
+    )
 }
 
 private fun SilentCard.displayName(): String = nameKo.ifBlank { id }
+
+private fun SilentCard.matchesCardSearch(query: String): Boolean {
+    val normalizedQuery = KoreanInitialUtils.normalizeSearchText(query)
+    if (normalizedQuery.isBlank()) return true
+
+    val searchableValues = listOf(
+        nameKo,
+        normalizedName,
+        KoreanInitialUtils.getKoreanInitials(nameKo),
+    ).map(KoreanInitialUtils::normalizeSearchText)
+
+    return searchableValues.any { it.contains(normalizedQuery) }
+}
+
+private fun SilentCard.typeLabel(): String = typeKo.ifBlank {
+    when (type) {
+        "Attack" -> "공격"
+        "Skill" -> "스킬"
+        "Power" -> "파워"
+        "Status" -> "상태"
+        else -> type.ifBlank { "-" }
+    }
+}
+
+private fun SilentCard.previewTags(): String =
+    allTags.distinct()
+        .take(3)
+        .joinToString(", ")
+        .ifBlank { "-" }
+
+private fun String.tierRank(): Int =
+    when (uppercase()) {
+        "S" -> 0
+        "A" -> 1
+        "B" -> 2
+        "C" -> 3
+        "D" -> 4
+        else -> 5
+    }
+
+private fun DeckAnalysis.topTagSummary(): String =
+    topTags.joinToString(", ") { (tag, count) -> "$tag $count" }
+        .ifBlank { "-" }
+
+private fun Int.signedScore(): String = if (this > 0) "+$this" else toString()
 
 private fun createCameraImageUri(context: Context): Uri {
     val imagesDir = File(context.cacheDir, "images").apply {

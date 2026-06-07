@@ -48,6 +48,8 @@ private fun CardsApp(
         onDeckClick = viewModel::openDeckDialog,
         onDismissDeck = viewModel::closeDeckDialog,
         onSkipClick = viewModel::clearRewardSlots,
+        onRemoveDeckCard = viewModel::removeCardFromDeck,
+        onResetDeck = viewModel::resetToStartingDeck,
         onImageSelected = viewModel::recognizeCardsFromImage,
         onOcrMessageShown = viewModel::consumeOcrMessage,
         onOcrResultSlotClick = viewModel::openOcrResultCardPicker,
@@ -55,6 +57,7 @@ private fun CardsApp(
         onDismissOcrResultCardPicker = viewModel::closeOcrResultCardPicker,
         onConfirmOcrResult = viewModel::confirmRecognizedCards,
         onCancelOcrResult = viewModel::cancelRecognizedCards,
+        onRetryLoad = viewModel::loadCards,
         modifier = modifier,
     )
 }

@@ -68,12 +68,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         ).withUpdatedRecommendation()
                     }
                 }
-                .onFailure { throwable ->
+                .onFailure {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             cards = emptyList(),
-                            errorMessage = throwable.message ?: "Failed to load cards",
+                            currentDeck = emptyList(),
+                            recommendationResult = null,
+                            errorMessage = "카드 데이터를 불러오지 못했습니다.",
                         )
                     }
                 }
@@ -130,9 +132,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun removeCardFromDeck(cardId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentDeck = removeOneCardFromDeck(currentState.currentDeck, cardId),
+            ).withUpdatedRecommendation()
+        }
+    }
+
+    fun resetToStartingDeck() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentDeck = createInitialSilentDeck(currentState.cards),
+            ).withUpdatedRecommendation()
+        }
+    }
+
     fun recognizeCardsFromImage(uri: Uri) {
         val cards = _uiState.value.cards
-        if (cards.isEmpty() || _uiState.value.isRecognizing) return
+        if (_uiState.value.isRecognizing) return
+        if (cards.isEmpty()) {
+            _uiState.update {
+                it.copy(ocrMessage = "카드 데이터가 없어 인식을 실행할 수 없습니다.")
+            }
+            return
+        }
 
         _uiState.update { it.copy(isRecognizing = true, ocrMessage = null) }
         viewModelScope.launch(Dispatchers.IO) {
@@ -148,7 +172,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun recognizeCardsFromBitmap(bitmap: Bitmap) {
         val cards = _uiState.value.cards
-        if (cards.isEmpty() || _uiState.value.isRecognizing) return
+        if (_uiState.value.isRecognizing) return
+        if (cards.isEmpty()) {
+            _uiState.update {
+                it.copy(ocrMessage = "카드 데이터가 없어 인식을 실행할 수 없습니다.")
+            }
+            return
+        }
 
         _uiState.update { it.copy(isRecognizing = true, ocrMessage = null) }
         viewModelScope.launch(Dispatchers.IO) {
@@ -198,7 +228,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update {
             it.copy(
                 isRecognizing = false,
-                ocrMessage = "카드를 인식하지 못했습니다. 직접 선택해주세요.",
+                ocrMessage = "이미지를 인식하는 중 문제가 발생했습니다.",
             )
         }
     }
@@ -301,6 +331,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    private fun removeOneCardFromDeck(deck: List<DeckCard>, cardId: String): List<DeckCard> =
+        deck.mapNotNull { deckCard ->
+            if (deckCard.card.id == cardId) {
+                val nextCount = deckCard.count - 1
+                if (nextCount > 0) deckCard.copy(count = nextCount) else null
+            } else {
+                deckCard
+            }
+        }
 }
 
 private const val REWARD_SLOT_COUNT = 3
