@@ -1,4 +1,4 @@
-package com.gchan.sts2_sherpa.ui
+﻿package com.gchan.sts2_sherpa.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -55,7 +55,7 @@ fun EncyclopediaScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 64.dp),
+            .padding(horizontal = 16.dp, vertical = 88.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(

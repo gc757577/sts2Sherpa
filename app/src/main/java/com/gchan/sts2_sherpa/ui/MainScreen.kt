@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -52,6 +53,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Menu
@@ -60,6 +62,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -95,6 +98,7 @@ import com.gchan.sts2_sherpa.logic.CandidateScore
 import com.gchan.sts2_sherpa.logic.DeckAnalysis
 import com.gchan.sts2_sherpa.logic.RecommendationAction
 import com.gchan.sts2_sherpa.logic.RecommendationResult
+import com.gchan.sts2_sherpa.ui.effects.EmberBackgroundEffect
 import com.gchan.sts2_sherpa.util.KoreanInitialUtils
 import java.io.File
 import kotlinx.coroutines.launch
@@ -446,9 +450,14 @@ private fun RewardSelectionContent(
         ?.recommendedCard
         ?.id
 
-    Box(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-    ) {
+    Box(modifier = modifier) {
+        EmberBackgroundEffect(modifier = Modifier.matchParentSize())
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+        ) {
         Row(
             modifier = Modifier.align(Alignment.TopEnd),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -519,6 +528,7 @@ private fun RewardSelectionContent(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
         )
+        }
     }
 }
 
@@ -657,12 +667,22 @@ private fun MenuButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconCircleButton(
-        icon = Icons.Filled.Menu,
-        contentDescription = "메뉴",
+    IconButton(
         onClick = onClick,
-        modifier = modifier,
-    )
+        modifier = modifier
+            .size(48.dp)
+            .background(
+                color = Color(0x3317140F),
+                shape = RoundedCornerShape(12.dp),
+            ),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Menu,
+            contentDescription = "메뉴",
+            tint = GoldLight,
+            modifier = Modifier.size(30.dp),
+        )
+    }
 }
 
 @Composable
@@ -1082,7 +1102,21 @@ fun CardPickerDialog(
                     onValueChange = { searchQuery = it },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("카드 이름 또는 초성 검색") },
+                    placeholder = { Text("예: 공중제비, ㄱㅈㅈㅂ") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = BoneText,
+                        unfocusedTextColor = BoneText,
+                        cursorColor = GoldLight,
+                        focusedBorderColor = RecommendGlow,
+                        unfocusedBorderColor = Gold.copy(alpha = 0.55f),
+                        focusedLabelColor = GoldLight,
+                        unfocusedLabelColor = MutedText,
+                        focusedPlaceholderColor = MutedText,
+                        unfocusedPlaceholderColor = MutedText.copy(alpha = 0.78f),
+                        focusedContainerColor = CardDark,
+                        unfocusedContainerColor = CardDark,
+                    ),
                 )
 
                 CardPickerFilterTabs(

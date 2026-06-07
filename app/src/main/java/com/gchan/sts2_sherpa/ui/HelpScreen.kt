@@ -1,4 +1,4 @@
-package com.gchan.sts2_sherpa.ui
+﻿package com.gchan.sts2_sherpa.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,7 @@ fun HelpScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 64.dp),
+            .padding(horizontal = 16.dp, vertical = 88.dp),
         contentPadding = PaddingValues(bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
