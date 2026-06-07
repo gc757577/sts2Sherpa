@@ -75,6 +75,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.gchan.sts2_sherpa.data.DeckCard
 import com.gchan.sts2_sherpa.data.SilentCard
+import com.gchan.sts2_sherpa.logic.BuildAnalyzer
 import com.gchan.sts2_sherpa.logic.CandidateScore
 import com.gchan.sts2_sherpa.logic.DeckAnalysis
 import com.gchan.sts2_sherpa.logic.RecommendationAction
@@ -106,6 +107,22 @@ fun MainScreen(
     onSkipClick: () -> Unit,
     onRemoveDeckCard: (String) -> Unit,
     onResetDeck: () -> Unit,
+    onOpenCurrentDeckAddCardPicker: () -> Unit,
+    onDismissCurrentDeckAddCardPicker: () -> Unit,
+    onCurrentDeckCardPicked: (SilentCard) -> Unit,
+    onOpenCurrentDeckSave: () -> Unit,
+    onSaveCurrentDeckBuild: (String, String) -> Unit,
+    onDismissCurrentDeckSave: () -> Unit,
+    onDeleteSavedBuild: (String) -> Unit,
+    onBuildMessageShown: () -> Unit,
+    onOpenLabDeckAddCardPicker: () -> Unit,
+    onDismissLabDeckAddCardPicker: () -> Unit,
+    onLabDeckCardPicked: (SilentCard) -> Unit,
+    onRemoveLabDeckCard: (String) -> Unit,
+    onResetLabDeck: () -> Unit,
+    onClearLabDeck: () -> Unit,
+    onSaveLabDeckBuild: (String, String) -> Unit,
+    onSaveCustomBuild: (String, String, List<DeckCard>) -> Unit,
     onImageSelected: (Uri) -> Unit,
     onOcrMessageShown: () -> Unit,
     onOcrResultSlotClick: (Int) -> Unit,
@@ -153,6 +170,12 @@ fun MainScreen(
         val message = uiState.ocrMessage ?: return@LaunchedEffect
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         onOcrMessageShown()
+    }
+
+    LaunchedEffect(uiState.buildMessage) {
+        val message = uiState.buildMessage ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        onBuildMessageShown()
     }
 
     ModalNavigationDrawer(
@@ -229,8 +252,23 @@ fun MainScreen(
                 )
 
                 AppScreen.DeckAnalysis -> DeckAnalysisScreen(
-                    deckCards = uiState.currentDeck,
-                    onDeckClick = onDeckClick,
+                    deckCards = uiState.labDeck,
+                    defaultBuildName = BuildAnalyzer.defaultPlayBuildName(BuildAnalyzer.directionLabel(uiState.labDeck))
+                        .replace("플레이", "실험"),
+                    onAddCardClick = onOpenLabDeckAddCardPicker,
+                    onRemoveDeckCard = onRemoveLabDeckCard,
+                    onResetDeck = onResetLabDeck,
+                    onClearDeck = onClearLabDeck,
+                    onSaveBuild = onSaveLabDeckBuild,
+                    modifier = Modifier.fillMaxSize(),
+                )
+
+                AppScreen.BuildCollection -> BuildCollectionScreen(
+                    savedBuilds = uiState.savedBuilds,
+                    allCards = uiState.cards,
+                    startingDeck = createStartingDeckForEditor(uiState.cards),
+                    onSaveBuild = onSaveCustomBuild,
+                    onDeleteBuild = onDeleteSavedBuild,
                     modifier = Modifier.fillMaxSize(),
                 )
 
@@ -271,12 +309,38 @@ fun MainScreen(
             )
         }
 
+        if (uiState.isCurrentDeckAddPickerOpen) {
+            CardPickerDialog(
+                cards = uiState.cards,
+                onCardPicked = onCurrentDeckCardPicked,
+                onDismissRequest = onDismissCurrentDeckAddCardPicker,
+            )
+        }
+
+        if (uiState.isLabDeckAddPickerOpen) {
+            CardPickerDialog(
+                cards = uiState.cards,
+                onCardPicked = onLabDeckCardPicked,
+                onDismissRequest = onDismissLabDeckAddCardPicker,
+            )
+        }
+
         if (uiState.isDeckDialogOpen) {
             DeckDialog(
                 deckCards = uiState.currentDeck,
                 onDismissRequest = onDismissDeck,
                 onRemoveDeckCard = onRemoveDeckCard,
                 onResetDeck = onResetDeck,
+                onSaveBuild = onOpenCurrentDeckSave,
+                onAddCardClick = onOpenCurrentDeckAddCardPicker,
+            )
+        }
+
+        if (uiState.isSaveCurrentBuildDialogOpen) {
+            SaveBuildDialog(
+                defaultName = uiState.currentBuildDefaultName,
+                onSave = onSaveCurrentDeckBuild,
+                onDismissRequest = onDismissCurrentDeckSave,
             )
         }
 
@@ -825,11 +889,6 @@ private fun DeckAnalysisSection(deckAnalysis: DeckAnalysis) {
             style = MaterialTheme.typography.bodySmall,
             color = Color(0xFFE6EEF5),
         )
-        Text(
-            text = "부족한 역할: ${deckAnalysis.missingRoles.joinToString(", ")}",
-            style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFFE6EEF5),
-        )
     }
 }
 
@@ -927,7 +986,7 @@ private fun CandidateScoreRow(
 }
 
 @Composable
-private fun CardPickerDialog(
+fun CardPickerDialog(
     cards: List<SilentCard>,
     onCardPicked: (SilentCard) -> Unit,
     onDismissRequest: () -> Unit,
@@ -1101,6 +1160,8 @@ private fun DeckDialog(
     onDismissRequest: () -> Unit,
     onRemoveDeckCard: (String) -> Unit,
     onResetDeck: () -> Unit,
+    onSaveBuild: () -> Unit,
+    onAddCardClick: () -> Unit,
 ) {
     var selectedFilter by remember { mutableStateOf(DeckFilter.All) }
     var isResetConfirmOpen by remember { mutableStateOf(false) }
@@ -1184,22 +1245,14 @@ private fun DeckDialog(
                     }
                 }
 
-                if (filteredDeckCards.isEmpty()) {
+                if (deckCards.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(
-                            text = if (deckCards.isEmpty()) {
-                                "현재 덱이 비어 있습니다."
-                            } else {
-                                "표시할 카드가 없습니다."
-                            },
-                            color = MutedText,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+                        DeckAddCardTile(onClick = onAddCardClick)
                     }
                 } else {
                     LazyVerticalGrid(
@@ -1216,6 +1269,9 @@ private fun DeckDialog(
                                 deckCard = deckCard,
                                 onRemoveClick = { onRemoveDeckCard(deckCard.card.id) },
                             )
+                        }
+                        item(key = "add_card_tile") {
+                            DeckAddCardTile(onClick = onAddCardClick)
                         }
                     }
                 }
@@ -1236,12 +1292,23 @@ private fun DeckDialog(
                     ) {
                         Text(text = "초기화")
                     }
-                    Button(
-                        onClick = onDismissRequest,
+                    OutlinedButton(
+                        onClick = onSaveBuild,
+                        enabled = deckCards.isNotEmpty(),
                         modifier = Modifier.weight(1f),
+                        border = BorderStroke(1.dp, Gold),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xAA1D180E),
+                            contentColor = GoldLight,
+                            disabledContainerColor = Color(0x661D180E),
+                            disabledContentColor = MutedText,
+                        ),
                         shape = RoundedCornerShape(10.dp),
                     ) {
-                        Text(text = "닫기")
+                        Text(
+                            text = "빌드 저장",
+                            maxLines = 1,
+                        )
                     }
                 }
             }
@@ -1360,6 +1427,50 @@ private fun DeckPoolCardItem(
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+fun DeckAddCardTile(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(0.72f)
+                .background(
+                    color = Color(0x6617140F),
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .border(
+                    width = 1.dp,
+                    color = Gold,
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "+",
+                color = GoldLight,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        Text(
+            text = "카드 추가",
+            color = BoneText,
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -1600,4 +1711,16 @@ private fun createCameraImageUri(context: Context): Uri {
         "${context.packageName}.fileprovider",
         imageFile,
     )
+}
+
+private fun createStartingDeckForEditor(cards: List<SilentCard>): List<DeckCard> {
+    val cardsById = cards.associateBy { it.id }
+    return listOf(
+        "STRIKE_SILENT" to 5,
+        "DEFEND_SILENT" to 5,
+        "NEUTRALIZE" to 1,
+        "SURVIVOR" to 1,
+    ).mapNotNull { (cardId, count) ->
+        cardsById[cardId]?.let { card -> DeckCard(card = card, count = count) }
+    }
 }

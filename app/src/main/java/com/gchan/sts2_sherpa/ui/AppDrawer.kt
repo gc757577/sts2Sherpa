@@ -21,6 +21,7 @@ enum class AppScreen(
     Encyclopedia("카드 백과사전"),
     TierList("티어리스트"),
     DeckAnalysis("덱 분석"),
+    BuildCollection("빌드 모음"),
     Help("도움말"),
 }
 

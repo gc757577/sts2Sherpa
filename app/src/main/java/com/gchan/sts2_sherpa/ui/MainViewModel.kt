@@ -6,8 +6,11 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gchan.sts2_sherpa.data.CardRepository
+import com.gchan.sts2_sherpa.data.BuildRepository
 import com.gchan.sts2_sherpa.data.DeckCard
+import com.gchan.sts2_sherpa.data.SavedBuild
 import com.gchan.sts2_sherpa.data.SilentCard
+import com.gchan.sts2_sherpa.logic.BuildAnalyzer
 import com.gchan.sts2_sherpa.logic.RecommendationEngine
 import com.gchan.sts2_sherpa.logic.RecommendationResult
 import com.gchan.sts2_sherpa.ocr.CardNameMatcher
@@ -31,8 +34,15 @@ data class MainUiState(
     val pendingRecognizedCards: List<SilentCard?> = List(REWARD_SLOT_COUNT) { null },
     val isOcrResultDialogOpen: Boolean = false,
     val ocrPickerSlotIndex: Int? = null,
+    val isCurrentDeckAddPickerOpen: Boolean = false,
+    val labDeck: List<DeckCard> = emptyList(),
+    val isLabDeckAddPickerOpen: Boolean = false,
     val ocrRawText: String = "",
     val ocrMessage: String? = null,
+    val savedBuilds: List<SavedBuild> = emptyList(),
+    val isSaveCurrentBuildDialogOpen: Boolean = false,
+    val currentBuildDefaultName: String = "",
+    val buildMessage: String? = null,
     val errorMessage: String? = null,
 ) {
     val isRewardFull: Boolean
@@ -44,6 +54,7 @@ data class MainUiState(
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = CardRepository(application.assets)
+    private val buildRepository = BuildRepository(application.applicationContext)
     private val ocrCardRecognizer = OcrCardRecognizer(application.applicationContext)
     private val cardNameMatcher = CardNameMatcher()
 
@@ -64,6 +75,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             isLoading = false,
                             cards = cards,
                             currentDeck = it.currentDeck.ifEmpty { createInitialSilentDeck(cards) },
+                            labDeck = it.labDeck.ifEmpty { createInitialSilentDeck(cards) },
+                            savedBuilds = buildRepository.loadSavedBuilds(cards),
                             errorMessage = null,
                         ).withUpdatedRecommendation()
                     }
@@ -140,11 +153,127 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun openCurrentDeckAddCardPicker() {
+        _uiState.update { it.copy(isCurrentDeckAddPickerOpen = true) }
+    }
+
+    fun closeCurrentDeckAddCardPicker() {
+        _uiState.update { it.copy(isCurrentDeckAddPickerOpen = false) }
+    }
+
+    fun addPickedCardToCurrentDeck(card: SilentCard) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentDeck = addCardToDeck(currentState.currentDeck, card),
+                isCurrentDeckAddPickerOpen = false,
+            ).withUpdatedRecommendation()
+        }
+    }
+
     fun resetToStartingDeck() {
         _uiState.update { currentState ->
             currentState.copy(
                 currentDeck = createInitialSilentDeck(currentState.cards),
             ).withUpdatedRecommendation()
+        }
+    }
+
+    fun openLabDeckAddCardPicker() {
+        _uiState.update { it.copy(isLabDeckAddPickerOpen = true) }
+    }
+
+    fun closeLabDeckAddCardPicker() {
+        _uiState.update { it.copy(isLabDeckAddPickerOpen = false) }
+    }
+
+    fun addPickedCardToLabDeck(card: SilentCard) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                labDeck = addCardToDeck(currentState.labDeck, card),
+                isLabDeckAddPickerOpen = false,
+            )
+        }
+    }
+
+    fun removeCardFromLabDeck(cardId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(labDeck = removeOneCardFromDeck(currentState.labDeck, cardId))
+        }
+    }
+
+    fun resetLabDeckToStartingDeck() {
+        _uiState.update { currentState ->
+            currentState.copy(labDeck = createInitialSilentDeck(currentState.cards))
+        }
+    }
+
+    fun clearLabDeck() {
+        _uiState.update { it.copy(labDeck = emptyList()) }
+    }
+
+    fun saveLabDeckAsBuild(name: String, description: String) {
+        saveDeckAsBuild(
+            deck = _uiState.value.labDeck,
+            name = name,
+            description = description,
+            source = "덱 실험실",
+            successMessage = "실험 덱이 빌드 모음에 저장되었습니다.",
+        )
+    }
+
+    fun openCurrentDeckSaveDialog() {
+        _uiState.update { currentState ->
+            if (currentState.currentDeck.isEmpty()) {
+                currentState.copy(buildMessage = "덱이 비어 있어 저장할 수 없습니다.")
+            } else {
+                val directionLabel = BuildAnalyzer.directionLabel(currentState.currentDeck)
+                currentState.copy(
+                    isSaveCurrentBuildDialogOpen = true,
+                    currentBuildDefaultName = BuildAnalyzer.defaultPlayBuildName(directionLabel),
+                    buildMessage = null,
+                )
+            }
+        }
+    }
+
+    fun closeCurrentDeckSaveDialog() {
+        _uiState.update {
+            it.copy(
+                isSaveCurrentBuildDialogOpen = false,
+                currentBuildDefaultName = "",
+            )
+        }
+    }
+
+    fun saveCurrentDeckAsBuild(name: String, description: String) {
+        saveDeckAsBuild(
+            deck = _uiState.value.currentDeck,
+            name = name,
+            description = description,
+            source = "추천 플레이",
+            successMessage = "현재 덱이 빌드 모음에 저장되었습니다.",
+            closeCurrentDeckDialog = true,
+        )
+    }
+
+    fun saveCustomBuild(name: String, description: String, deck: List<DeckCard>) {
+        saveDeckAsBuild(
+            deck = deck,
+            name = name,
+            description = description,
+            source = "직접 생성",
+            successMessage = "빌드가 저장되었습니다.",
+        )
+    }
+
+    fun deleteSavedBuild(buildId: String) {
+        _uiState.update { currentState ->
+            val nextBuilds = currentState.savedBuilds.filterNot { it.id == buildId }
+            buildRepository.saveSavedBuilds(nextBuilds)
+            currentState.copy(
+                savedBuilds = nextBuilds,
+                buildMessage = "저장된 빌드를 삭제했습니다.",
+            )
         }
     }
 
@@ -295,6 +424,51 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun consumeOcrMessage() {
         _uiState.update { it.copy(ocrMessage = null) }
+    }
+
+    fun consumeBuildMessage() {
+        _uiState.update { it.copy(buildMessage = null) }
+    }
+
+    private fun saveDeckAsBuild(
+        deck: List<DeckCard>,
+        name: String,
+        description: String,
+        source: String,
+        successMessage: String,
+        closeCurrentDeckDialog: Boolean = false,
+    ) {
+        _uiState.update { currentState ->
+            val trimmedName = name.trim()
+            if (trimmedName.isBlank()) {
+                return@update currentState.copy(buildMessage = "빌드 이름을 입력해주세요.")
+            }
+            if (deck.isEmpty()) {
+                return@update currentState.copy(buildMessage = "덱이 비어 있어 저장할 수 없습니다.")
+            }
+
+            val directionLabel = BuildAnalyzer.directionLabel(deck)
+            val now = System.currentTimeMillis()
+            val savedBuild = SavedBuild(
+                id = "build_$now",
+                name = trimmedName,
+                description = description.trim(),
+                deck = deck,
+                totalCardCount = deck.sumOf { it.count },
+                completionScore = BuildAnalyzer.completionScore(deck),
+                directionLabel = directionLabel,
+                source = source,
+                createdAt = now,
+            )
+            val nextBuilds = listOf(savedBuild) + currentState.savedBuilds
+            buildRepository.saveSavedBuilds(nextBuilds)
+            currentState.copy(
+                savedBuilds = nextBuilds,
+                isSaveCurrentBuildDialogOpen = if (closeCurrentDeckDialog) false else currentState.isSaveCurrentBuildDialogOpen,
+                currentBuildDefaultName = if (closeCurrentDeckDialog) "" else currentState.currentBuildDefaultName,
+                buildMessage = successMessage,
+            )
+        }
     }
 
     private fun MainUiState.withUpdatedRecommendation(): MainUiState {
