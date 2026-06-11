@@ -10,7 +10,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -79,15 +82,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -101,6 +109,7 @@ import com.gchan.sts2_sherpa.logic.RecommendationResult
 import com.gchan.sts2_sherpa.ui.effects.EmberBackgroundEffect
 import com.gchan.sts2_sherpa.util.KoreanInitialUtils
 import java.io.File
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private val DungeonTop = Color(0xFF05070B)
@@ -113,6 +122,19 @@ private val GoldLight = Color(0xFFFFE0A0)
 private val BoneText = Color(0xFFE8D7A2)
 private val MutedText = Color(0xFFBEB29A)
 private val RecommendGlow = Color(0xFF6FB7FF)
+
+private data class RewardSlotLayout(
+    val center: androidx.compose.ui.geometry.Offset,
+    val size: IntSize,
+)
+
+private data class FlyingRewardCardState(
+    val card: SilentCard,
+    val slotIndex: Int,
+    val startCenter: androidx.compose.ui.geometry.Offset,
+    val endCenter: androidx.compose.ui.geometry.Offset,
+    val startSize: IntSize,
+)
 
 @Composable
 fun MainScreen(
@@ -449,8 +471,116 @@ private fun RewardSelectionContent(
         ?.takeIf { it.action == RecommendationAction.PICK_CARD }
         ?.recommendedCard
         ?.id
+    val density = LocalDensity.current
+    val resetStartOffsetPx = with(density) { -96.dp.toPx() }
+    val resetOffsetY = remember { Animatable(0f) }
+    val resetAlpha = remember { Animatable(1f) }
+    val areRewardSlotsEmpty = uiState.selectedRewardCards.all { it == null }
+    val scope = rememberCoroutineScope()
+    var rootOrigin by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+    var deckTargetCenter by remember { mutableStateOf<androidx.compose.ui.geometry.Offset?>(null) }
+    var rewardSlotLayouts by remember(uiState.selectedRewardCards.size) {
+        mutableStateOf(List<RewardSlotLayout?>(uiState.selectedRewardCards.size) { null })
+    }
+    var flyingCardState by remember { mutableStateOf<FlyingRewardCardState?>(null) }
+    var isSkipAnimating by remember { mutableStateOf(false) }
+    var isRecommendationPanelVisible by remember {
+        mutableStateOf(uiState.recommendationResult != null)
+    }
+    val isResolvingReward = flyingCardState != null || isSkipAnimating
+    val shouldShowRewardInstruction =
+        !isResolvingReward &&
+            uiState.recommendationResult == null &&
+            uiState.selectedRewardCards.any { it == null }
+    val skipDisappearProgress by animateFloatAsState(
+        targetValue = if (isSkipAnimating) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 320,
+            easing = FastOutSlowInEasing,
+        ),
+        label = "reward-skip-disappear",
+    )
+    val pickDisappearProgress by animateFloatAsState(
+        targetValue = if (flyingCardState != null) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 320,
+            easing = FastOutSlowInEasing,
+        ),
+        label = "reward-pick-disappear",
+    )
 
-    Box(modifier = modifier) {
+    LaunchedEffect(uiState.recommendationResult) {
+        if (uiState.recommendationResult != null) {
+            isRecommendationPanelVisible = true
+        }
+    }
+
+    LaunchedEffect(uiState.slotResetAnimationKey, resetStartOffsetPx, areRewardSlotsEmpty) {
+        if (uiState.slotResetAnimationKey > 0 && areRewardSlotsEmpty) {
+            resetOffsetY.snapTo(resetStartOffsetPx)
+            resetAlpha.snapTo(0.65f)
+
+            launch {
+                resetOffsetY.animateTo(
+                    targetValue = 0f,
+                    animationSpec = tween(
+                        durationMillis = 380,
+                        easing = FastOutSlowInEasing,
+                    ),
+                )
+            }
+            launch {
+                resetAlpha.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 280),
+                )
+            }
+        }
+    }
+
+    fun resolveRewardCard(slotIndex: Int, card: SilentCard) {
+        if (isResolvingReward) return
+
+        isRecommendationPanelVisible = false
+
+        val startLayout = rewardSlotLayouts.getOrNull(slotIndex)
+        val endCenter = deckTargetCenter
+        if (startLayout == null || endCenter == null) {
+            onRewardCardClick(card)
+            return
+        }
+
+        flyingCardState = FlyingRewardCardState(
+            card = card,
+            slotIndex = slotIndex,
+            startCenter = startLayout.center,
+            endCenter = endCenter,
+            startSize = startLayout.size,
+        )
+    }
+
+    fun resolveSkip() {
+        if (isResolvingReward) return
+
+        if (uiState.selectedRewardCards.none { it != null }) {
+            onSkipClick()
+            return
+        }
+
+        isRecommendationPanelVisible = false
+        isSkipAnimating = true
+        scope.launch {
+            delay(330)
+            onSkipClick()
+            isSkipAnimating = false
+        }
+    }
+
+    Box(
+        modifier = modifier.onGloballyPositioned { coordinates ->
+            rootOrigin = coordinates.positionInRoot()
+        },
+    ) {
         EmberBackgroundEffect(modifier = Modifier.matchParentSize())
 
         Box(
@@ -466,16 +596,35 @@ private fun RewardSelectionContent(
             DeckCountBadge(
                 deckCardCount = uiState.deckCardCount,
                 onClick = onDeckClick,
+                modifier = Modifier.onGloballyPositioned { coordinates ->
+                    val position = coordinates.positionInRoot() - rootOrigin
+                    deckTargetCenter = androidx.compose.ui.geometry.Offset(
+                        x = position.x + coordinates.size.width / 2f,
+                        y = position.y + coordinates.size.height / 2f,
+                    )
+                },
             )
         }
 
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(bottom = if (uiState.recommendationResult == null) 76.dp else 36.dp),
+                .padding(bottom = if (uiState.recommendationResult == null) 76.dp else 36.dp)
+                .graphicsLayer {
+                    translationY = resetOffsetY.value
+                    alpha = resetAlpha.value
+                },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
+            AnimatedVisibility(
+                visible = shouldShowRewardInstruction,
+                enter = fadeIn(animationSpec = tween(260)) + slideInVertically(
+                    animationSpec = tween(320, easing = FastOutSlowInEasing),
+                    initialOffsetY = { -it / 3 },
+                ),
+                exit = fadeOut(animationSpec = tween(120)),
+            ) {
             Text(
                 text = "3장의 보상 카드를 선택하거나 카메라로 인식해 추천을 받아보세요.",
                 modifier = Modifier.fillMaxWidth(),
@@ -483,32 +632,36 @@ private fun RewardSelectionContent(
                 color = BoneText,
                 textAlign = TextAlign.Center,
             )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                uiState.selectedRewardCards.forEachIndexed { index, card ->
-                    RewardCardSlot(
-                        card = card,
-                        isRecommended = card != null && card.id == recommendedCardId,
-                        onEmptyClick = { onRewardSlotClick(index) },
-                        onCardClick = onRewardCardClick,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
             }
 
+            RewardSlotsRow(
+                rewardSlots = uiState.selectedRewardCards,
+                recommendedCardId = recommendedCardId,
+                resolvingSlotIndex = flyingCardState?.slotIndex,
+                skipDisappearProgress = skipDisappearProgress,
+                pickDisappearProgress = pickDisappearProgress,
+                onRewardSlotPositioned = { index, layout ->
+                    val localLayout = layout.copy(center = layout.center - rootOrigin)
+                    rewardSlotLayouts = rewardSlotLayouts.mapIndexed { currentIndex, currentLayout ->
+                        if (currentIndex == index) localLayout else currentLayout
+                    }
+                },
+                onRewardSlotClick = { index ->
+                    if (!isResolvingReward) onRewardSlotClick(index)
+                },
+                onRewardCardClick = ::resolveRewardCard,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
             AnimatedVisibility(
-                visible = uiState.recommendationResult != null,
-                enter = fadeIn(animationSpec = tween(220)) + slideInVertically(
-                    animationSpec = tween(220),
-                    initialOffsetY = { it / 8 },
+                visible = uiState.recommendationResult != null && isRecommendationPanelVisible,
+                enter = fadeIn(animationSpec = tween(280)) + slideInVertically(
+                    animationSpec = tween(280),
+                    initialOffsetY = { it / 4 },
                 ),
-                exit = fadeOut(animationSpec = tween(180)) + slideOutVertically(
-                    animationSpec = tween(180),
-                    targetOffsetY = { it / 12 },
+                exit = fadeOut(animationSpec = tween(260)) + slideOutVertically(
+                    animationSpec = tween(260),
+                    targetOffsetY = { it / 5 },
                 ),
             ) {
                 val result = uiState.recommendationResult ?: return@AnimatedVisibility
@@ -520,16 +673,204 @@ private fun RewardSelectionContent(
         }
 
         BottomActionButtons(
-            onSkipClick = onSkipClick,
-            onCaptureCameraClick = onCaptureCameraClick,
+            onSkipClick = ::resolveSkip,
+            onCaptureCameraClick = {
+                if (!isResolvingReward) onCaptureCameraClick()
+            },
             isRecognizing = uiState.isRecognizing,
             isSkipRecommended = uiState.recommendationResult?.action == RecommendationAction.SKIP,
+            enabled = !isResolvingReward,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
         )
         }
+
+        flyingCardState?.let { flyingState ->
+            FlyingRewardCard(
+                state = flyingState,
+                onFinished = {
+                    onRewardCardClick(flyingState.card)
+                    flyingCardState = null
+                },
+                modifier = Modifier.matchParentSize(),
+            )
+        }
     }
+}
+
+@Composable
+private fun RewardSlotsRow(
+    rewardSlots: List<SilentCard?>,
+    recommendedCardId: String?,
+    resolvingSlotIndex: Int?,
+    skipDisappearProgress: Float,
+    pickDisappearProgress: Float,
+    onRewardSlotPositioned: (Int, RewardSlotLayout) -> Unit,
+    onRewardSlotClick: (Int) -> Unit,
+    onRewardCardClick: (Int, SilentCard) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isAnyCardRecommended = recommendedCardId != null
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        rewardSlots.forEachIndexed { index, card ->
+            val isRecommended = card != null && card.id == recommendedCardId
+            val targetWeight = when {
+                !isAnyCardRecommended -> 1f
+                isRecommended -> 1.12f
+                card != null -> 0.92f
+                else -> 1f
+            }
+            val animatedWeight by animateFloatAsState(
+                targetValue = targetWeight,
+                animationSpec = tween(
+                    durationMillis = 280,
+                    easing = FastOutSlowInEasing,
+                ),
+                label = "reward-card-weight-$index",
+            )
+
+            RewardCardSlot(
+                card = card,
+                isRecommended = isRecommended,
+                isBeingResolved = resolvingSlotIndex == index,
+                disappearProgress = when {
+                    card == null -> 0f
+                    resolvingSlotIndex == null -> skipDisappearProgress
+                    resolvingSlotIndex == index -> 0f
+                    else -> pickDisappearProgress
+                },
+                onEmptyClick = { onRewardSlotClick(index) },
+                onCardClick = { clickedCard -> onRewardCardClick(index, clickedCard) },
+                modifier = Modifier
+                    .weight(animatedWeight)
+                    .zIndex(if (isRecommended) 1f else 0f)
+                    .onGloballyPositioned { coordinates ->
+                        val position = coordinates.positionInRoot()
+                        onRewardSlotPositioned(
+                            index,
+                            RewardSlotLayout(
+                                center = androidx.compose.ui.geometry.Offset(
+                                    x = position.x + coordinates.size.width / 2f,
+                                    y = position.y + coordinates.size.height / 2f,
+                                ),
+                                size = coordinates.size,
+                            ),
+                        )
+                    },
+            )
+        }
+    }
+}
+
+@Composable
+private fun FlyingRewardCard(
+    state: FlyingRewardCardState,
+    onFinished: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val progress = remember(state) { Animatable(0f) }
+    val density = LocalDensity.current
+    val cardWidth = with(density) { state.startSize.width.toDp() }
+    val cardHeight = with(density) { state.startSize.height.toDp() }
+
+    LaunchedEffect(state) {
+        progress.snapTo(0f)
+        progress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 560,
+                easing = FastOutSlowInEasing,
+            ),
+        )
+        onFinished()
+    }
+
+    val fraction = progress.value
+    val arcHeight = with(density) { -124.dp.toPx() }
+    val horizontalBend = with(density) { 72.dp.toPx() }
+    val center = getFlyingCardPosition(state, fraction, arcHeight, horizontalBend)
+    val rotation = flyingCardRotationForProgress(fraction)
+    val scale = lerp(1f, 0.24f, fraction)
+    val alpha = if (fraction < 0.82f) {
+        1f
+    } else {
+        1f - ((fraction - 0.82f) / 0.18f).coerceIn(0f, 1f)
+    }
+
+    Box(modifier = modifier) {
+        Card(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .size(cardWidth, cardHeight)
+                .graphicsLayer {
+                    translationX = center.x - state.startSize.width / 2f
+                    translationY = center.y - state.startSize.height / 2f
+                    scaleX = scale
+                    scaleY = scale
+                    rotationZ = rotation
+                    this.alpha = alpha
+                },
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(containerColor = CardDark),
+            border = BorderStroke(1.dp, Gold.copy(alpha = 0.78f)),
+        ) {
+            AssetCardImage(
+                path = state.card.image,
+                contentDescription = state.card.displayName(),
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+}
+
+private fun flyingCardRotationForProgress(fraction: Float): Float {
+    val p = fraction.coerceIn(0f, 1f)
+
+    return when {
+        p < 0.25f -> lerp(0f, -12f, smoothStep(p / 0.25f))
+        p < 0.5f -> lerp(-12f, -22f, smoothStep((p - 0.25f) / 0.25f))
+        p < 0.75f -> lerp(-22f, -12f, smoothStep((p - 0.5f) / 0.25f))
+        else -> lerp(-12f, 0f, smoothStep((p - 0.75f) / 0.25f))
+    }
+}
+
+private fun getFlyingCardPosition(
+    state: FlyingRewardCardState,
+    fraction: Float,
+    arcHeight: Float,
+    horizontalBend: Float,
+): androidx.compose.ui.geometry.Offset {
+    val t = fraction.coerceIn(0f, 1f)
+    val oneMinusT = 1f - t
+    val horizontalDistance = kotlin.math.abs(state.endCenter.x - state.startCenter.x)
+    val controlX = (state.startCenter.x + state.endCenter.x) / 2f -
+        horizontalDistance * 0.45f -
+        horizontalBend
+    val controlY = (state.startCenter.y + state.endCenter.y) / 2f + arcHeight
+
+    return androidx.compose.ui.geometry.Offset(
+        x = oneMinusT * oneMinusT * state.startCenter.x +
+            2f * oneMinusT * t * controlX +
+            t * t * state.endCenter.x,
+        y = oneMinusT * oneMinusT * state.startCenter.y +
+            2f * oneMinusT * t * controlY +
+            t * t * state.endCenter.y,
+    )
+}
+
+private fun lerp(start: Float, end: Float, fraction: Float): Float {
+    return start + (end - start) * fraction
+}
+
+private fun smoothStep(fraction: Float): Float {
+    val t = fraction.coerceIn(0f, 1f)
+    return t * t * (3f - 2f * t)
 }
 
 @Composable
@@ -538,6 +879,7 @@ private fun BottomActionButtons(
     onCaptureCameraClick: () -> Unit,
     isRecognizing: Boolean,
     isSkipRecommended: Boolean,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -546,13 +888,14 @@ private fun BottomActionButtons(
     ) {
         RecognitionButton(
             text = if (isRecognizing) "인식 중..." else "카메라로 카드 인식",
-            enabled = !isRecognizing,
+            enabled = enabled && !isRecognizing,
             onClick = onCaptureCameraClick,
             modifier = Modifier.fillMaxWidth(),
         )
 
         SkipButton(
             isSkipRecommended = isSkipRecommended,
+            enabled = enabled,
             onClick = onSkipClick,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -562,6 +905,7 @@ private fun BottomActionButtons(
 @Composable
 private fun SkipButton(
     isSkipRecommended: Boolean,
+    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -581,6 +925,7 @@ private fun SkipButton(
 
     OutlinedButton(
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier.graphicsLayer {
             scaleX = pulseScale
             scaleY = pulseScale
@@ -644,9 +989,10 @@ private fun RecognitionButton(
 private fun DeckCountBadge(
     deckCardCount: Int,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = Modifier.clickable(onClick = onClick),
+        modifier = modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(999.dp),
         color = PanelDark,
         border = BorderStroke(1.dp, Gold),
@@ -689,17 +1035,32 @@ private fun MenuButton(
 private fun RewardCardSlot(
     card: SilentCard?,
     isRecommended: Boolean,
+    isBeingResolved: Boolean,
+    disappearProgress: Float,
     onEmptyClick: () -> Unit,
     onCardClick: (SilentCard) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val borderWidth by animateDpAsState(
-        targetValue = if (isRecommended) 3.dp else 1.dp,
-        animationSpec = tween(durationMillis = 180),
+        targetValue = if (isRecommended) 2.dp else 1.dp,
+        animationSpec = tween(
+            durationMillis = 240,
+            easing = FastOutSlowInEasing,
+        ),
         label = "reward-card-border",
     )
     Column(
-        modifier = modifier,
+        modifier = modifier.graphicsLayer {
+            val disappearScale = 1f - (0.15f * disappearProgress)
+            scaleX = disappearScale
+            scaleY = disappearScale
+            translationY = 24.dp.toPx() * disappearProgress
+            alpha = when {
+                isBeingResolved -> 0f
+                disappearProgress > 0f -> 1f - disappearProgress
+                else -> 1f
+            }
+        },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {

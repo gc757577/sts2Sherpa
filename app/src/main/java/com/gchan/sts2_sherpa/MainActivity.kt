@@ -1,6 +1,7 @@
 package com.gchan.sts2_sherpa
 
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,7 +20,10 @@ import com.gchan.sts2_sherpa.ui.theme.Sts2_SherpaTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.BLACK),
+            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.BLACK),
+        )
         setContent {
             Sts2_SherpaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

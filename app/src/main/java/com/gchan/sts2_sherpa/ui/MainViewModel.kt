@@ -28,6 +28,7 @@ data class MainUiState(
     val selectedRewardCards: List<SilentCard?> = List(REWARD_SLOT_COUNT) { null },
     val currentDeck: List<DeckCard> = emptyList(),
     val recommendationResult: RecommendationResult? = null,
+    val slotResetAnimationKey: Int = 0,
     val pickerSlotIndex: Int? = null,
     val isDeckDialogOpen: Boolean = false,
     val isRecognizing: Boolean = false,
@@ -125,12 +126,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun clearRewardSlots() {
-        _uiState.update {
-            it.copy(
-                selectedRewardCards = List(REWARD_SLOT_COUNT) { null },
-                pickerSlotIndex = null,
-                recommendationResult = null,
-            )
+        _uiState.update { currentState ->
+            currentState.withClearedRewardSlots()
         }
     }
 
@@ -138,10 +135,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { currentState ->
             currentState.copy(
                 currentDeck = addCardToDeck(currentState.currentDeck, card),
-                selectedRewardCards = List(REWARD_SLOT_COUNT) { null },
-                pickerSlotIndex = null,
-                recommendationResult = null,
-            )
+            ).withClearedRewardSlots()
         }
     }
 
@@ -494,6 +488,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         return copy(recommendationResult = recommendation)
+    }
+
+    private fun MainUiState.withClearedRewardSlots(
+        animateReset: Boolean = true,
+    ): MainUiState {
+        val shouldAnimate = animateReset && (
+            selectedRewardCards.any { it != null } ||
+                recommendationResult != null
+            )
+
+        return copy(
+            selectedRewardCards = List(REWARD_SLOT_COUNT) { null },
+            pickerSlotIndex = null,
+            recommendationResult = null,
+            slotResetAnimationKey = if (shouldAnimate) {
+                slotResetAnimationKey + 1
+            } else {
+                slotResetAnimationKey
+            },
+        )
     }
 
     private fun createInitialSilentDeck(cards: List<SilentCard>): List<DeckCard> {
