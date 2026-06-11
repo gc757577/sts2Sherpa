@@ -71,6 +71,7 @@ fun EncyclopediaScreen(
             modifier = Modifier.fillMaxWidth(),
             label = { Text("카드 이름 또는 초성 검색") },
             singleLine = true,
+            colors = darkOutlinedTextFieldColors(),
         )
         BrowseFilterRow(selectedFilter = filter, onFilterSelected = { filter = it })
 

@@ -25,6 +25,17 @@ class BuildRepository(context: Context) {
         preferences.edit().putString(KEY_SAVED_BUILDS, array.toString()).apply()
     }
 
+    fun updateSavedBuild(
+        builds: List<SavedBuild>,
+        updatedBuild: SavedBuild,
+    ): List<SavedBuild> {
+        val nextBuilds = builds.map { build ->
+            if (build.id == updatedBuild.id) updatedBuild else build
+        }
+        saveSavedBuilds(nextBuilds)
+        return nextBuilds
+    }
+
     private fun JSONObject.toSavedBuild(cardsById: Map<String, SilentCard>): SavedBuild {
         val deck = optJSONArray("deck").toDeckCards(cardsById)
         return SavedBuild(
@@ -76,4 +87,3 @@ class BuildRepository(context: Context) {
         const val KEY_SAVED_BUILDS = "saved_builds_json"
     }
 }
-

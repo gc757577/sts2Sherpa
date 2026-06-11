@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 data class MainUiState(
     val isLoading: Boolean = true,
@@ -286,6 +287,45 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             currentState.copy(
                 savedBuilds = nextBuilds,
                 buildMessage = "저장된 빌드를 삭제했습니다.",
+            )
+        }
+    }
+
+    fun updateSavedBuild(
+        originalBuild: SavedBuild,
+        name: String,
+        description: String,
+        deck: List<DeckCard>,
+    ) {
+        _uiState.update { currentState ->
+            val trimmedName = name.trim()
+            if (trimmedName.isBlank()) {
+                return@update currentState.copy(buildMessage = "빌드 이름을 입력해주세요.")
+            }
+            if (deck.isEmpty()) {
+                return@update currentState.copy(buildMessage = "덱이 비어 있어 저장할 수 없습니다.")
+            }
+
+            val normalScore = BuildAnalyzer.completionScore(deck)
+            val labScore = BuildAnalyzer.labCompletionScore(deck)
+            val useLabCompletion = abs(originalBuild.completionScore - labScore) <=
+                abs(originalBuild.completionScore - normalScore)
+            val updatedBuild = originalBuild.copy(
+                name = trimmedName,
+                description = description.trim(),
+                deck = deck,
+                totalCardCount = deck.sumOf { it.count },
+                completionScore = if (useLabCompletion) labScore else normalScore,
+                directionLabel = if (useLabCompletion) {
+                    BuildAnalyzer.labDirectionLabel(deck)
+                } else {
+                    BuildAnalyzer.directionLabel(deck)
+                },
+            )
+            val nextBuilds = buildRepository.updateSavedBuild(currentState.savedBuilds, updatedBuild)
+            currentState.copy(
+                savedBuilds = nextBuilds,
+                buildMessage = "빌드가 수정되었습니다.",
             )
         }
     }

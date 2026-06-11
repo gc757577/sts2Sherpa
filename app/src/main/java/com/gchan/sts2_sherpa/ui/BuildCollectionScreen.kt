@@ -71,11 +71,13 @@ fun BuildCollectionScreen(
     allCards: List<SilentCard>,
     startingDeck: List<DeckCard>,
     onSaveBuild: (String, String, List<DeckCard>) -> Unit,
+    onUpdateBuild: (SavedBuild, String, String, List<DeckCard>) -> Unit,
     onDeleteBuild: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedBuild by remember { mutableStateOf<SavedBuild?>(null) }
     var isEditorOpen by remember { mutableStateOf(false) }
+    var editingBuild by remember { mutableStateOf<SavedBuild?>(null) }
     var selectedTab by remember { mutableStateOf(BuildCollectionTab.BuildList) }
     var selectedStatsCardId by remember { mutableStateOf<String?>(null) }
     val usageStats = remember(savedBuilds, allCards) {
@@ -141,6 +143,7 @@ fun BuildCollectionScreen(
                         SavedBuildCard(
                             build = build,
                             onClick = { selectedBuild = build },
+                            onEditClick = { editingBuild = build },
                             onDeleteClick = { onDeleteBuild(build.id) },
                         )
                     }
@@ -225,11 +228,25 @@ fun BuildCollectionScreen(
         BuildEditorDialog(
             allCards = allCards,
             startingDeck = startingDeck,
+            initialBuild = null,
             onSave = { name, description, deck ->
                 onSaveBuild(name, description, deck)
                 isEditorOpen = false
             },
             onDismissRequest = { isEditorOpen = false },
+        )
+    }
+
+    editingBuild?.let { build ->
+        BuildEditorDialog(
+            allCards = allCards,
+            startingDeck = startingDeck,
+            initialBuild = build,
+            onSave = { name, description, deck ->
+                onUpdateBuild(build, name, description, deck)
+                editingBuild = null
+            },
+            onDismissRequest = { editingBuild = null },
         )
     }
 }
@@ -419,6 +436,7 @@ private fun Float.asPercent(): Int = (this * 100f).roundToInt()
 private fun SavedBuildCard(
     build: SavedBuild,
     onClick: () -> Unit,
+    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
     Card(
@@ -453,8 +471,13 @@ private fun SavedBuildCard(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-                TextButton(onClick = onDeleteClick) {
-                    Text("삭제", color = Color(0xFFFF9A7A))
+                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                    TextButton(onClick = onEditClick) {
+                        Text("수정", color = Color(0xFFFFE0A0))
+                    }
+                    TextButton(onClick = onDeleteClick) {
+                        Text("삭제", color = Color(0xFFFF9A7A))
+                    }
                 }
             }
             if (build.description.isNotBlank()) {
@@ -475,13 +498,15 @@ private fun SavedBuildCard(
 private fun BuildEditorDialog(
     allCards: List<SilentCard>,
     startingDeck: List<DeckCard>,
+    initialBuild: SavedBuild?,
     onSave: (String, String, List<DeckCard>) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    var name by remember { mutableStateOf("실험 덱") }
-    var description by remember { mutableStateOf("") }
-    var useStartingDeck by remember { mutableStateOf(true) }
-    var deck by remember(startingDeck) { mutableStateOf(startingDeck) }
+    val isEditMode = initialBuild != null
+    var name by remember(initialBuild) { mutableStateOf(initialBuild?.name ?: "실험 덱") }
+    var description by remember(initialBuild) { mutableStateOf(initialBuild?.description.orEmpty()) }
+    var useStartingDeck by remember(initialBuild) { mutableStateOf(initialBuild == null) }
+    var deck by remember(initialBuild, startingDeck) { mutableStateOf(initialBuild?.deck ?: startingDeck) }
     var isCardPickerOpen by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val direction = remember(deck) { BuildAnalyzer.labDirectionLabel(deck) }
@@ -492,7 +517,7 @@ private fun BuildEditorDialog(
         containerColor = Color(0xF017140F),
         titleContentColor = Color(0xFFFFE0A0),
         textContentColor = Color(0xFFE8D7A2),
-        title = { Text("새 빌드 만들기", fontWeight = FontWeight.Bold) },
+        title = { Text(if (isEditMode) "빌드 수정" else "새 빌드 만들기", fontWeight = FontWeight.Bold) },
         text = {
             LazyColumn(
                 modifier = Modifier
@@ -507,6 +532,7 @@ private fun BuildEditorDialog(
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text("빌드 이름") },
                         singleLine = true,
+                        colors = darkOutlinedTextFieldColors(),
                     )
                 }
                 item {
@@ -516,6 +542,7 @@ private fun BuildEditorDialog(
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text("설명") },
                         minLines = 2,
+                        colors = darkOutlinedTextFieldColors(),
                     )
                 }
                 item {
@@ -587,7 +614,7 @@ private fun BuildEditorDialog(
                     }
                 },
             ) {
-                Text("저장")
+                Text(if (isEditMode) "수정 완료" else "저장")
             }
         },
         dismissButton = {

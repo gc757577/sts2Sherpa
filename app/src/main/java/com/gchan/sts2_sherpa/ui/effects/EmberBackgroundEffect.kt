@@ -17,22 +17,22 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import kotlin.math.abs
 import kotlin.math.sin
 
-private const val ASH_COUNT = 54
-private const val EMBER_DOT_COUNT = 56
-private const val EFFECT_ALPHA_MULTIPLIER = 1.0f
+private const val ASH_COUNT = 66
+private const val EMBER_DOT_COUNT = 86
+private const val EFFECT_ALPHA_MULTIPLIER = 1.22f
 private const val ASH_SPEED_MULTIPLIER = 1.65f
 private const val EMBER_SPEED_MULTIPLIER = 1.85f
-private const val GLOW_MID_ALPHA = 0.10f
-private const val GLOW_BOTTOM_ALPHA = 0.26f
+private const val GLOW_MID_ALPHA = 0.18f
+private const val GLOW_BOTTOM_ALPHA = 0.42f
 
-private val bottomGlowRed = Color(0xFF5A120A)
-private val bottomGlowOrange = Color(0xFFB33A16)
-private val particleHotCore = Color(0xFFFFF0C2)
-private val particleWarmGold = Color(0xFFFFC66D)
-private val particleEmber = Color(0xFFFF9A3D)
-private val particleCopper = Color(0xFFE86F32)
-private val particleSoftGold = Color(0xFFF8D89A)
-private val ashColor = Color(0xFFE8C48A)
+private val bottomGlowDeepRed = Color(0xFF5E1008)
+private val bottomGlowRed = Color(0xFF8B1F0D)
+private val bottomGlowOrange = Color(0xFFD24A18)
+private val particleHotCore = Color(0xFFFFD88A)
+private val particleWarmGold = Color(0xFFFFB858)
+private val particleEmber = Color(0xFFFF8432)
+private val particleCopper = Color(0xFFE35B24)
+private val ashColor = Color(0xFFFFB36A)
 
 private data class AshParticle(
     val x: Float,
@@ -62,8 +62,8 @@ private val ashParticles = List(ASH_COUNT) { index ->
     AshParticle(
         x = unit(index, 0.31f),
         y = unit(index, 0.47f),
-        radius = 0.45f + unit(index, 0.71f) * 1.85f,
-        alpha = 0.05f + unit(index, 0.93f) * 0.18f,
+        radius = 0.55f + unit(index, 0.71f) * 2.05f,
+        alpha = 0.07f + unit(index, 0.93f) * 0.22f,
         drift = (-0.0035f + unit(index, 1.13f) * 0.0075f) * ASH_SPEED_MULTIPLIER,
         speed = (0.010f + unit(index, 1.37f) * 0.020f) * ASH_SPEED_MULTIPLIER,
         phase = unit(index, 1.59f) * 120f,
@@ -75,8 +75,8 @@ private val emberDots = List(EMBER_DOT_COUNT) { index ->
     EmberDot(
         x = unit(index, 1.61f),
         y = unit(index, 1.83f),
-        radius = 0.85f + unit(index, 2.07f) * 3.25f,
-        alpha = 0.14f + unit(index, 2.31f) * 0.46f,
+        radius = 0.85f + unit(index, 2.07f) * 3.45f,
+        alpha = 0.20f + unit(index, 2.31f) * 0.52f,
         drift = (-0.004f + unit(index, 2.57f) * 0.013f) * EMBER_SPEED_MULTIPLIER,
         speed = (0.018f + unit(index, 2.79f) * 0.040f) * EMBER_SPEED_MULTIPLIER,
         warm = unit(index, 3.01f),
@@ -122,9 +122,10 @@ private fun DrawScope.drawBottomGlow() {
         brush = Brush.verticalGradient(
             colorStops = arrayOf(
                 0.00f to Color.Transparent,
-                0.28f to Color.Transparent,
-                0.54f to bottomGlowRed.copy(alpha = GLOW_MID_ALPHA * 0.38f),
-                0.74f to bottomGlowRed.copy(alpha = GLOW_MID_ALPHA),
+                0.16f to Color.Transparent,
+                0.38f to bottomGlowDeepRed.copy(alpha = GLOW_MID_ALPHA * 0.30f),
+                0.58f to bottomGlowRed.copy(alpha = GLOW_MID_ALPHA * 0.72f),
+                0.78f to bottomGlowRed.copy(alpha = GLOW_MID_ALPHA),
                 1.00f to bottomGlowOrange.copy(alpha = GLOW_BOTTOM_ALPHA)
             )
         )
@@ -133,15 +134,44 @@ private fun DrawScope.drawBottomGlow() {
     drawCircle(
         brush = Brush.radialGradient(
             colors = listOf(
-                bottomGlowOrange.copy(alpha = 0.18f),
-                bottomGlowRed.copy(alpha = 0.10f),
+                bottomGlowOrange.copy(alpha = 0.32f),
+                bottomGlowRed.copy(alpha = 0.20f),
+                bottomGlowDeepRed.copy(alpha = 0.08f),
                 Color.Transparent
             ),
-            center = Offset(size.width * 0.50f, size.height * 0.98f),
-            radius = size.width * 0.86f
+            center = Offset(size.width * 0.50f, size.height * 1.02f),
+            radius = size.width * 1.06f
         ),
-        center = Offset(size.width * 0.50f, size.height * 0.98f),
-        radius = size.width * 0.86f
+        center = Offset(size.width * 0.50f, size.height * 1.02f),
+        radius = size.width * 1.06f
+    )
+
+    drawCircle(
+        brush = Brush.radialGradient(
+            colors = listOf(
+                bottomGlowRed.copy(alpha = 0.14f),
+                bottomGlowDeepRed.copy(alpha = 0.07f),
+                Color.Transparent
+            ),
+            center = Offset(size.width * 0.18f, size.height * 0.88f),
+            radius = size.width * 0.58f
+        ),
+        center = Offset(size.width * 0.18f, size.height * 0.88f),
+        radius = size.width * 0.58f
+    )
+
+    drawCircle(
+        brush = Brush.radialGradient(
+            colors = listOf(
+                bottomGlowOrange.copy(alpha = 0.12f),
+                bottomGlowRed.copy(alpha = 0.07f),
+                Color.Transparent
+            ),
+            center = Offset(size.width * 0.82f, size.height * 0.86f),
+            radius = size.width * 0.52f
+        ),
+        center = Offset(size.width * 0.82f, size.height * 0.86f),
+        radius = size.width * 0.52f
     )
 }
 
@@ -179,13 +209,13 @@ private fun DrawScope.drawEmberDot(particle: EmberDot, time: Float) {
     val alpha = particle.alpha * pulse * mask * verticalFade * EFFECT_ALPHA_MULTIPLIER
 
     drawCircle(
-        color = color.copy(alpha = alpha * 0.18f),
-        radius = particle.radius * 4.2f,
+        color = color.copy(alpha = alpha * 0.24f),
+        radius = particle.radius * 4.8f,
         center = Offset(x, y)
     )
     drawCircle(
-        color = color.copy(alpha = alpha * 0.58f),
-        radius = particle.radius * 1.75f,
+        color = color.copy(alpha = alpha * 0.66f),
+        radius = particle.radius * 1.90f,
         center = Offset(x, y)
     )
     drawCircle(

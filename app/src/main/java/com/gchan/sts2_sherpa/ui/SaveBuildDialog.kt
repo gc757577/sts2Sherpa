@@ -21,8 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun SaveBuildDialog(
@@ -57,6 +57,7 @@ fun SaveBuildDialog(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("빌드 이름") },
                     singleLine = true,
+                    colors = darkOutlinedTextFieldColors(),
                 )
                 OutlinedTextField(
                     value = description,
@@ -64,6 +65,7 @@ fun SaveBuildDialog(
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("설명") },
                     minLines = 3,
+                    colors = darkOutlinedTextFieldColors(),
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -80,4 +82,3 @@ fun SaveBuildDialog(
         }
     }
 }
-

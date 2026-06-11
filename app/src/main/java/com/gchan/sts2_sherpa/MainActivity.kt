@@ -70,6 +70,7 @@ private fun CardsApp(
         onClearLabDeck = viewModel::clearLabDeck,
         onSaveLabDeckBuild = viewModel::saveLabDeckAsBuild,
         onSaveCustomBuild = viewModel::saveCustomBuild,
+        onUpdateSavedBuild = viewModel::updateSavedBuild,
         onImageSelected = viewModel::recognizeCardsFromImage,
         onOcrMessageShown = viewModel::consumeOcrMessage,
         onOcrResultSlotClick = viewModel::openOcrResultCardPicker,

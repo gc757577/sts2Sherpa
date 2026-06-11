@@ -165,6 +165,7 @@ fun MainScreen(
     onClearLabDeck: () -> Unit,
     onSaveLabDeckBuild: (String, String) -> Unit,
     onSaveCustomBuild: (String, String, List<DeckCard>) -> Unit,
+    onUpdateSavedBuild: (com.gchan.sts2_sherpa.data.SavedBuild, String, String, List<DeckCard>) -> Unit,
     onImageSelected: (Uri) -> Unit,
     onOcrMessageShown: () -> Unit,
     onOcrResultSlotClick: (Int) -> Unit,
@@ -316,6 +317,7 @@ fun MainScreen(
                         allCards = uiState.cards,
                         startingDeck = createStartingDeckForEditor(uiState.cards),
                         onSaveBuild = onSaveCustomBuild,
+                        onUpdateBuild = onUpdateSavedBuild,
                         onDeleteBuild = onDeleteSavedBuild,
                         modifier = Modifier.fillMaxSize(),
                     )
