@@ -1,6 +1,7 @@
 package com.gchan.sts2_sherpa.ui
 
 import android.app.Application
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
@@ -45,6 +46,7 @@ data class MainUiState(
     val currentBuildDefaultName: String = "",
     val buildMessage: String? = null,
     val errorMessage: String? = null,
+    val showOnboarding: Boolean = false,
 ) {
     val isRewardFull: Boolean
         get() = selectedRewardCards.all { it != null }
@@ -56,10 +58,18 @@ data class MainUiState(
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = CardRepository(application.assets)
     private val buildRepository = BuildRepository(application.applicationContext)
+    private val preferences = application.applicationContext.getSharedPreferences(
+        APP_PREFERENCES_NAME,
+        Context.MODE_PRIVATE,
+    )
     private val ocrCardRecognizer = OcrCardRecognizer(application.applicationContext)
     private val cardNameMatcher = CardNameMatcher()
 
-    private val _uiState = MutableStateFlow(MainUiState())
+    private val _uiState = MutableStateFlow(
+        MainUiState(
+            showOnboarding = !preferences.getBoolean(KEY_ONBOARDING_COMPLETED, false),
+        ),
+    )
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     init {
@@ -111,6 +121,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun closeDeckDialog() {
         _uiState.update { it.copy(isDeckDialogOpen = false) }
+    }
+
+    fun completeOnboarding() {
+        preferences.edit()
+            .putBoolean(KEY_ONBOARDING_COMPLETED, true)
+            .apply()
+        _uiState.update { it.copy(showOnboarding = false) }
     }
 
     fun selectCardForSlot(card: SilentCard) {
@@ -543,6 +560,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 private const val REWARD_SLOT_COUNT = 3
+private const val APP_PREFERENCES_NAME = "sts2_sherpa_preferences"
+private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
 
 private val INITIAL_SILENT_DECK = listOf(
     "STRIKE_SILENT" to 5,

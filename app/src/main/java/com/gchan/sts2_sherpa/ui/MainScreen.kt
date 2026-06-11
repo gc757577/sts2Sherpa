@@ -107,6 +107,7 @@ import com.gchan.sts2_sherpa.logic.DeckAnalysis
 import com.gchan.sts2_sherpa.logic.RecommendationAction
 import com.gchan.sts2_sherpa.logic.RecommendationResult
 import com.gchan.sts2_sherpa.ui.effects.EmberBackgroundEffect
+import com.gchan.sts2_sherpa.ui.onboarding.OnboardingDialog
 import com.gchan.sts2_sherpa.util.KoreanInitialUtils
 import java.io.File
 import kotlinx.coroutines.delay
@@ -172,6 +173,7 @@ fun MainScreen(
     onConfirmOcrResult: () -> Unit,
     onCancelOcrResult: () -> Unit,
     onRetryLoad: () -> Unit,
+    onCompleteOnboarding: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -394,6 +396,13 @@ fun MainScreen(
         if (isHelpDialogOpen) {
             HelpDialog(
                 onDismissRequest = { isHelpDialogOpen = false },
+            )
+        }
+
+        if (uiState.showOnboarding) {
+            OnboardingDialog(
+                onFinish = onCompleteOnboarding,
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }

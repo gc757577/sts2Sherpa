@@ -55,7 +55,8 @@ fun EncyclopediaScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 88.dp),
+            .padding(horizontal = 16.dp)
+            .padding(top = 88.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
@@ -84,7 +85,7 @@ fun EncyclopediaScreen(
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(118.dp),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 96.dp),
+                contentPadding = PaddingValues(bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {

@@ -78,6 +78,7 @@ private fun CardsApp(
         onConfirmOcrResult = viewModel::confirmRecognizedCards,
         onCancelOcrResult = viewModel::cancelRecognizedCards,
         onRetryLoad = viewModel::loadCards,
+        onCompleteOnboarding = viewModel::completeOnboarding,
         modifier = modifier,
     )
 }

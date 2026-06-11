@@ -85,8 +85,9 @@ fun DeckAnalysisScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 88.dp),
-        contentPadding = PaddingValues(bottom = 96.dp),
+            .padding(horizontal = 16.dp)
+            .padding(top = 88.dp, bottom = 16.dp),
+        contentPadding = PaddingValues(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
